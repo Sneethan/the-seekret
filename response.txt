@@ -1,0 +1,2108 @@
+`{
+    "data": [
+        {
+            "advertiser": {
+                "id": "44583021",
+                "description": "Grove Store"
+            },
+            "bulletPoints": [],
+            "branding": {},
+            "classifications": [
+                {
+                    "classification": {
+                        "id": "6043",
+                        "description": "Retail & Consumer Products"
+                    },
+                    "subclassification": {
+                        "id": "6050",
+                        "description": "Retail Assistants"
+                    }
+                }
+            ],
+            "companyProfileStructuredDataId": 0,
+            "displayType": "standard",
+            "id": "81410746",
+            "isFeatured": false,
+            "listingDate": "2025-01-16T01:06:11Z",
+            "listingDateDisplay": "19m ago",
+            "locations": [
+                {
+                    "label": "Grove, Central & South East TAS",
+                    "countryCode": "AU",
+                    "seoHierarchy": [
+                        {
+                            "contextualName": "Grove TAS 7109"
+                        },
+                        {
+                            "contextualName": "Central & South East TAS"
+                        }
+                    ]
+                }
+            ],
+            "roleId": "console-operator",
+            "salaryLabel": "",
+            "solMetadata": {
+                "searchRequestToken": "3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "token": "0~3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "jobId": "81410746",
+                "section": "MAIN",
+                "sectionRank": 1,
+                "jobAdType": "ORGANIC",
+                "tags": {
+                    "mordor__flights": "mordor_571",
+                    "mordor__s": "0"
+                }
+            },
+            "tags": [
+                {
+                    "type": "EARLY_APPLICANT",
+                    "label": "Be an early applicant"
+                }
+            ],
+            "teaser": "We are a local shop, takeaway, and major fuel retailer, located at Grove.",
+            "title": "Console Operator / Shop Assistant",
+            "tracking": "ewogICJ0b2tlbiI6ICIwN2Q4MmRmMS0wYzViLTQ1MzYtOWU1Yy0wNDI1OGQ5MzQxMzVfMSIKfQ==",
+            "workTypes": [
+                "Casual/Vacation"
+            ],
+            "workArrangements": {
+                "data": [
+                    {
+                        "id": "1",
+                        "label": {
+                            "text": "On-site"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "advertiser": {
+                "id": "39590422",
+                "description": "Nexus Inc"
+            },
+            "bulletPoints": [
+                "Generous remuneration and additional employee benefits",
+                "Opportunity for ongoing training and career development",
+                "Supportive team culture and management"
+            ],
+            "branding": {
+                "serpLogoUrl": "https://bx-branding-gateway.cloud.seek.com.au/b7cbe877-2361-41ae-b145-2b339450c15a.1/serpLogo"
+            },
+            "classifications": [
+                {
+                    "classification": {
+                        "id": "6163",
+                        "description": "Community Services & Development"
+                    },
+                    "subclassification": {
+                        "id": "6164",
+                        "description": "Aged & Disability Support"
+                    }
+                }
+            ],
+            "companyName": "Nexus Global",
+            "companyProfileStructuredDataId": 621529,
+            "displayStyle": {
+                "search": "A"
+            },
+            "displayType": "standard",
+            "id": "81410603",
+            "isFeatured": false,
+            "listingDate": "2025-01-16T01:01:42Z",
+            "listingDateDisplay": "23m ago",
+            "locations": [
+                {
+                    "label": "Dowsing Point, Hobart TAS",
+                    "countryCode": "AU",
+                    "seoHierarchy": [
+                        {
+                            "contextualName": "Dowsing Point TAS 7010"
+                        },
+                        {
+                            "contextualName": "All Hobart TAS"
+                        }
+                    ]
+                }
+            ],
+            "roleId": "project-officer",
+            "salaryLabel": "$74,198.24 – $79,551.47 per year",
+            "solMetadata": {
+                "searchRequestToken": "3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "token": "0~3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "jobId": "81410603",
+                "section": "MAIN",
+                "sectionRank": 2,
+                "jobAdType": "ORGANIC",
+                "tags": {
+                    "mordor__flights": "mordor_571",
+                    "mordor__s": "0"
+                }
+            },
+            "tags": [
+                {
+                    "type": "EARLY_APPLICANT",
+                    "label": "Be an early applicant"
+                }
+            ],
+            "teaser": "Exciting opportunity for an early career Project Officer to develop their skills in strategic data analysis, project management and report writing.",
+            "title": "Project Officer - Strategy",
+            "tracking": "ewogICJ0b2tlbiI6ICIwN2Q4MmRmMS0wYzViLTQ1MzYtOWU1Yy0wNDI1OGQ5MzQxMzVfMiIKfQ==",
+            "workTypes": [
+                "Full time"
+            ],
+            "workArrangements": {
+                "data": [
+                    {
+                        "id": "1",
+                        "label": {
+                            "text": "On-site"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "advertiser": {
+                "id": "62855943",
+                "description": "Longley International Hotel"
+            },
+            "bulletPoints": [],
+            "branding": {},
+            "classifications": [
+                {
+                    "classification": {
+                        "id": "1212",
+                        "description": "Hospitality & Tourism"
+                    },
+                    "subclassification": {
+                        "id": "6052",
+                        "description": "Chefs/Cooks"
+                    }
+                }
+            ],
+            "companyProfileStructuredDataId": 0,
+            "displayType": "standard",
+            "id": "81409020",
+            "isFeatured": false,
+            "listingDate": "2025-01-16T00:55:35Z",
+            "listingDateDisplay": "30m ago",
+            "locations": [
+                {
+                    "label": "Longley, Hobart TAS",
+                    "countryCode": "AU",
+                    "seoHierarchy": [
+                        {
+                            "contextualName": "Longley TAS 7150"
+                        },
+                        {
+                            "contextualName": "All Hobart TAS"
+                        }
+                    ]
+                }
+            ],
+            "roleId": "chef",
+            "salaryLabel": "$30 – $35 per hour",
+            "solMetadata": {
+                "searchRequestToken": "3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "token": "0~3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "jobId": "81409020",
+                "section": "MAIN",
+                "sectionRank": 3,
+                "jobAdType": "ORGANIC",
+                "tags": {
+                    "mordor__flights": "mordor_571",
+                    "mordor__s": "0"
+                }
+            },
+            "tags": [
+                {
+                    "type": "EARLY_APPLICANT",
+                    "label": "Be an early applicant"
+                }
+            ],
+            "teaser": "Longley International Hotel is seeking a talented and experienced Chef to join our passionate kitchen team.",
+            "title": "Chef",
+            "tracking": "ewogICJ0b2tlbiI6ICIwN2Q4MmRmMS0wYzViLTQ1MzYtOWU1Yy0wNDI1OGQ5MzQxMzVfMyIKfQ==",
+            "workTypes": [
+                "Casual/Vacation"
+            ],
+            "workArrangements": {
+                "data": [
+                    {
+                        "id": "1",
+                        "label": {
+                            "text": "On-site"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "advertiser": {
+                "id": "34083124",
+                "description": "Dental South Pty Ltd"
+            },
+            "bulletPoints": [],
+            "branding": {
+                "serpLogoUrl": "https://bx-branding-gateway.cloud.seek.com.au/96651429-b288-4e26-b406-ca220b92544b.1/serpLogo"
+            },
+            "classifications": [
+                {
+                    "classification": {
+                        "id": "1211",
+                        "description": "Healthcare & Medical"
+                    },
+                    "subclassification": {
+                        "id": "1372",
+                        "description": "Dental"
+                    }
+                }
+            ],
+            "companyName": "Dental South",
+            "companyProfileStructuredDataId": 563495,
+            "displayStyle": {
+                "search": "A"
+            },
+            "displayType": "standard",
+            "id": "81409996",
+            "isFeatured": false,
+            "listingDate": "2025-01-16T00:40:43Z",
+            "listingDateDisplay": "44m ago",
+            "locations": [
+                {
+                    "label": "Margate, Hobart TAS",
+                    "countryCode": "AU",
+                    "seoHierarchy": [
+                        {
+                            "contextualName": "Margate TAS 7054"
+                        },
+                        {
+                            "contextualName": "All Hobart TAS"
+                        }
+                    ]
+                }
+            ],
+            "roleId": "dental-assistant",
+            "salaryLabel": "$25 – $36 per hour",
+            "solMetadata": {
+                "searchRequestToken": "3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "token": "0~3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "jobId": "81409996",
+                "section": "MAIN",
+                "sectionRank": 4,
+                "jobAdType": "ORGANIC",
+                "tags": {
+                    "mordor__flights": "mordor_571",
+                    "mordor__s": "0"
+                }
+            },
+            "tags": [
+                {
+                    "type": "EARLY_APPLICANT",
+                    "label": "Be an early applicant"
+                }
+            ],
+            "teaser": "Supportive team, ongoing training, and flexible work arrangements at respected dental practice.",
+            "title": "Dental Assistant, Qualified or Trainee",
+            "tracking": "ewogICJ0b2tlbiI6ICIwN2Q4MmRmMS0wYzViLTQ1MzYtOWU1Yy0wNDI1OGQ5MzQxMzVfNCIKfQ==",
+            "workTypes": [
+                "Full time"
+            ],
+            "workArrangements": {
+                "data": [
+                    {
+                        "id": "1",
+                        "label": {
+                            "text": "On-site"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "advertiser": {
+                "id": "24804897",
+                "description": "CPB Contractors VIC & TAS"
+            },
+            "bulletPoints": [
+                "Tier 1 Construction Company",
+                "Great Team Environment",
+                "Live and work in beautiful Tasmania"
+            ],
+            "branding": {
+                "serpLogoUrl": "https://bx-branding-gateway.cloud.seek.com.au/f403c897-a35a-9b87-037d-bd45c91c1956.1/serpLogo"
+            },
+            "classifications": [
+                {
+                    "classification": {
+                        "id": "1209",
+                        "description": "Engineering"
+                    },
+                    "subclassification": {
+                        "id": "6027",
+                        "description": "Civil/Structural Engineering"
+                    }
+                }
+            ],
+            "companyName": "CPB Contractors",
+            "companyProfileStructuredDataId": 686,
+            "displayStyle": {
+                "search": "A"
+            },
+            "displayType": "standard",
+            "id": "81409562",
+            "isFeatured": false,
+            "listingDate": "2025-01-16T00:22:14Z",
+            "listingDateDisplay": "1h ago",
+            "locations": [
+                {
+                    "label": "Hobart TAS",
+                    "countryCode": "AU",
+                    "seoHierarchy": [
+                        {
+                            "contextualName": "All Hobart TAS"
+                        },
+                        {
+                            "contextualName": "Tasmania TAS"
+                        }
+                    ]
+                }
+            ],
+            "roleId": "structural-engineer",
+            "salaryLabel": "",
+            "solMetadata": {
+                "searchRequestToken": "3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "token": "0~3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "jobId": "81409562",
+                "section": "MAIN",
+                "sectionRank": 5,
+                "jobAdType": "ORGANIC",
+                "tags": {
+                    "mordor__flights": "mordor_571",
+                    "mordor__s": "0"
+                }
+            },
+            "tags": [
+                {
+                    "type": "EARLY_APPLICANT",
+                    "label": "Be an early applicant"
+                }
+            ],
+            "teaser": "We’ve got a great team here in our TasWater Capital Delivery Office (CDO) and we are on the lookout for a Senior Project Engineer (Structures) .",
+            "title": "Senior Project Engineer - Structures - TasWater",
+            "tracking": "ewogICJ0b2tlbiI6ICIwN2Q4MmRmMS0wYzViLTQ1MzYtOWU1Yy0wNDI1OGQ5MzQxMzVfNSIKfQ==",
+            "workTypes": [
+                "Full time"
+            ],
+            "workArrangements": {
+                "data": [
+                    {
+                        "id": "1",
+                        "label": {
+                            "text": "On-site"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "advertiser": {
+                "id": "41709196",
+                "description": "Megavar Pty Ltd"
+            },
+            "bulletPoints": [
+                "Great opportunity for professional growth",
+                "Flexible employer",
+                "Innovative projects"
+            ],
+            "branding": {
+                "serpLogoUrl": "https://bx-branding-gateway.cloud.seek.com.au/e1c23b8c-9b05-46ae-9a6c-d78f091ef4ed.1/serpLogo"
+            },
+            "classifications": [
+                {
+                    "classification": {
+                        "id": "1209",
+                        "description": "Engineering"
+                    },
+                    "subclassification": {
+                        "id": "6028",
+                        "description": "Electrical/Electronic Engineering"
+                    }
+                }
+            ],
+            "companyName": "Megavar",
+            "companyProfileStructuredDataId": 698955,
+            "displayStyle": {
+                "search": "A"
+            },
+            "displayType": "standard",
+            "id": "81409417",
+            "isFeatured": false,
+            "listingDate": "2025-01-16T00:17:05Z",
+            "listingDateDisplay": "1h ago",
+            "locations": [
+                {
+                    "label": "Cambridge, Hobart TAS",
+                    "countryCode": "AU",
+                    "seoHierarchy": [
+                        {
+                            "contextualName": "Cambridge TAS 7170"
+                        },
+                        {
+                            "contextualName": "All Hobart TAS"
+                        }
+                    ]
+                }
+            ],
+            "roleId": "automation-engineer",
+            "salaryLabel": "",
+            "solMetadata": {
+                "searchRequestToken": "3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "token": "0~3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "jobId": "81409417",
+                "section": "MAIN",
+                "sectionRank": 6,
+                "jobAdType": "ORGANIC",
+                "tags": {
+                    "mordor__flights": "mordor_571",
+                    "mordor__s": "0"
+                }
+            },
+            "tags": [
+                {
+                    "type": "EARLY_APPLICANT",
+                    "label": "Be an early applicant"
+                }
+            ],
+            "teaser": "As our new Senior Substation SCADA and Automation Engineer, you'll be the secret sauce in a team of top-notch specialists!",
+            "title": "Senior Substation SCADA and Automation Engineer",
+            "tracking": "ewogICJ0b2tlbiI6ICIwN2Q4MmRmMS0wYzViLTQ1MzYtOWU1Yy0wNDI1OGQ5MzQxMzVfNiIKfQ==",
+            "workTypes": [
+                "Full time"
+            ],
+            "workArrangements": {
+                "data": [
+                    {
+                        "id": "2",
+                        "label": {
+                            "text": "Hybrid"
+                        }
+                    }
+                ],
+                "displayText": "Hybrid"
+            }
+        },
+        {
+            "advertiser": {
+                "id": "23491725",
+                "description": "Hazell Bros Group"
+            },
+            "bulletPoints": [
+                "Awesome opportunity for the right person!",
+                "Employer of Choice with excellent conditions of employment",
+                "Develop your career and have a true impact on our operations"
+            ],
+            "branding": {
+                "serpLogoUrl": "https://bx-branding-gateway.cloud.seek.com.au/76bdac02-a98f-5308-fb15-e77ed109a1ab.1/serpLogo"
+            },
+            "classifications": [
+                {
+                    "classification": {
+                        "id": "1225",
+                        "description": "Trades & Services"
+                    },
+                    "subclassification": {
+                        "id": "1328",
+                        "description": "Automotive Trades"
+                    }
+                }
+            ],
+            "companyName": "Hazell Bros",
+            "companyProfileStructuredDataId": 18686,
+            "displayStyle": {
+                "search": "A"
+            },
+            "displayType": "standard",
+            "id": "81409059",
+            "isFeatured": false,
+            "listingDate": "2025-01-16T00:01:42Z",
+            "listingDateDisplay": "1h ago",
+            "locations": [
+                {
+                    "label": "Hobart TAS",
+                    "countryCode": "AU",
+                    "seoHierarchy": [
+                        {
+                            "contextualName": "All Hobart TAS"
+                        },
+                        {
+                            "contextualName": "Tasmania TAS"
+                        }
+                    ]
+                }
+            ],
+            "roleId": "supervisor",
+            "salaryLabel": "",
+            "solMetadata": {
+                "searchRequestToken": "3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "token": "0~3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "jobId": "81409059",
+                "section": "MAIN",
+                "sectionRank": 7,
+                "jobAdType": "ORGANIC",
+                "tags": {
+                    "mordor__flights": "mordor_571",
+                    "mordor__s": "0"
+                }
+            },
+            "tags": [
+                {
+                    "type": "EARLY_APPLICANT",
+                    "label": "Be an early applicant"
+                }
+            ],
+            "teaser": "Join the Hazell Bros team in our Hobart Workshop as a Light Vehicle Supervisor!",
+            "title": "Light Vehicle Supervisor",
+            "tracking": "ewogICJ0b2tlbiI6ICIwN2Q4MmRmMS0wYzViLTQ1MzYtOWU1Yy0wNDI1OGQ5MzQxMzVfNyIKfQ==",
+            "workTypes": [
+                "Full time"
+            ],
+            "workArrangements": {
+                "data": [
+                    {
+                        "id": "1",
+                        "label": {
+                            "text": "On-site"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "advertiser": {
+                "id": "39623949",
+                "description": "CatholicCare Tasmania"
+            },
+            "bulletPoints": [],
+            "branding": {},
+            "classifications": [
+                {
+                    "classification": {
+                        "id": "1211",
+                        "description": "Healthcare & Medical"
+                    },
+                    "subclassification": {
+                        "id": "6351",
+                        "description": "Psychology, Counselling & Social Work"
+                    }
+                }
+            ],
+            "companyName": "CatholicCare Victoria Tasmania",
+            "companyProfileStructuredDataId": 367670,
+            "displayType": "standard",
+            "id": "81408376",
+            "isFeatured": false,
+            "listingDate": "2025-01-15T23:24:03Z",
+            "listingDateDisplay": "2h ago",
+            "locations": [
+                {
+                    "label": "Hobart TAS",
+                    "countryCode": "AU",
+                    "seoHierarchy": [
+                        {
+                            "contextualName": "All Hobart TAS"
+                        },
+                        {
+                            "contextualName": "Tasmania TAS"
+                        }
+                    ]
+                }
+            ],
+            "roleId": "coordinator",
+            "salaryLabel": "",
+            "solMetadata": {
+                "searchRequestToken": "3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "token": "0~3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "jobId": "81408376",
+                "section": "MAIN",
+                "sectionRank": 8,
+                "jobAdType": "ORGANIC",
+                "tags": {
+                    "mordor__flights": "mordor_571",
+                    "mordor__s": "0"
+                }
+            },
+            "tags": [
+                {
+                    "type": "EARLY_APPLICANT",
+                    "label": "Be an early applicant"
+                }
+            ],
+            "teaser": "We are seeking a passionate School Counselling Coordinator to work within the CatholicCare Counselling & Therapeutic team",
+            "title": "Statewide Coordinator School Counselling",
+            "tracking": "ewogICJ0b2tlbiI6ICIwN2Q4MmRmMS0wYzViLTQ1MzYtOWU1Yy0wNDI1OGQ5MzQxMzVfOCIKfQ==",
+            "workTypes": [
+                "Full time"
+            ],
+            "workArrangements": {
+                "data": [
+                    {
+                        "id": "1",
+                        "label": {
+                            "text": "On-site"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "advertiser": {
+                "id": "15272126",
+                "description": "Department of Health"
+            },
+            "bulletPoints": [
+                "Focus on ongoing professional and career development",
+                "Multiple Permanent position available!",
+                "Excellent benefits including salary packaging"
+            ],
+            "branding": {
+                "serpLogoUrl": "https://bx-branding-gateway.cloud.seek.com.au/d779d1a3-d01b-49ba-9d56-2e7b00ab8d25.1/serpLogo"
+            },
+            "classifications": [
+                {
+                    "classification": {
+                        "id": "1211",
+                        "description": "Healthcare & Medical"
+                    },
+                    "subclassification": {
+                        "id": "6335",
+                        "description": "Medical Imaging"
+                    }
+                },
+                {
+                    "classification": {
+                        "id": "1210",
+                        "description": "Government & Defence"
+                    },
+                    "subclassification": {
+                        "id": "1411",
+                        "description": "Government - State"
+                    }
+                }
+            ],
+            "companyName": "Department of Health Tasmania",
+            "companyProfileStructuredDataId": 7574,
+            "displayStyle": {
+                "search": "A"
+            },
+            "displayType": "standard",
+            "id": "81408013",
+            "isFeatured": false,
+            "listingDate": "2025-01-15T23:04:56Z",
+            "listingDateDisplay": "2h ago",
+            "locations": [
+                {
+                    "label": "Hobart TAS",
+                    "countryCode": "AU",
+                    "seoHierarchy": [
+                        {
+                            "contextualName": "All Hobart TAS"
+                        },
+                        {
+                            "contextualName": "Tasmania TAS"
+                        }
+                    ]
+                }
+            ],
+            "roleId": "cardiac-physiologist",
+            "salaryLabel": "$110,425 to $121,907 per annum + 11.5% Super",
+            "solMetadata": {
+                "searchRequestToken": "3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "token": "0~3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "jobId": "81408013",
+                "section": "MAIN",
+                "sectionRank": 9,
+                "jobAdType": "ORGANIC",
+                "tags": {
+                    "mordor__flights": "mordor_571",
+                    "mordor__s": "0"
+                }
+            },
+            "tags": [
+                {
+                    "type": "EARLY_APPLICANT",
+                    "label": "Be an early applicant"
+                }
+            ],
+            "teaser": "Come Join our team as a senior member of the Cardiac Physiologist team within the Department of Cardiology and contribute to the success of the Unit.",
+            "title": "Cardiac Physiologist - Echocardiographer",
+            "tracking": "ewogICJ0b2tlbiI6ICIwN2Q4MmRmMS0wYzViLTQ1MzYtOWU1Yy0wNDI1OGQ5MzQxMzVfOSIKfQ==",
+            "workTypes": [
+                "Full time"
+            ],
+            "workArrangements": {
+                "data": [
+                    {
+                        "id": "1",
+                        "label": {
+                            "text": "On-site"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "advertiser": {
+                "id": "32948920",
+                "description": "Department of Natural Resources and Environment Tasmania"
+            },
+            "bulletPoints": [
+                "Permanent position located in contemporary office in Hobart",
+                "Interesting, varied and meaningful work within the Location Services Branch",
+                "Work with a great team of committed professionals"
+            ],
+            "branding": {
+                "serpLogoUrl": "https://bx-branding-gateway.cloud.seek.com.au/8d524f2b-bd38-4e46-9442-b88c67d1f55a.1/serpLogo"
+            },
+            "classifications": [
+                {
+                    "classification": {
+                        "id": "1223",
+                        "description": "Science & Technology"
+                    },
+                    "subclassification": {
+                        "id": "6222",
+                        "description": "Mathematics, Statistics & Information Sciences"
+                    }
+                },
+                {
+                    "classification": {
+                        "id": "1210",
+                        "description": "Government & Defence"
+                    },
+                    "subclassification": {
+                        "id": "1411",
+                        "description": "Government - State"
+                    }
+                }
+            ],
+            "companyName": "Department of Natural Resources and Environment Tasmania",
+            "companyProfileStructuredDataId": 7597,
+            "displayStyle": {
+                "search": "A"
+            },
+            "displayType": "standard",
+            "id": "81407977",
+            "isFeatured": false,
+            "listingDate": "2025-01-15T23:02:36Z",
+            "listingDateDisplay": "2h ago",
+            "locations": [
+                {
+                    "label": "Hobart TAS",
+                    "countryCode": "AU",
+                    "seoHierarchy": [
+                        {
+                            "contextualName": "All Hobart TAS"
+                        },
+                        {
+                            "contextualName": "Tasmania TAS"
+                        }
+                    ]
+                }
+            ],
+            "roleId": "Spatial-Information-Officer",
+            "salaryLabel": "$74,783 to $80,835 pro rata, per annum + super",
+            "solMetadata": {
+                "searchRequestToken": "3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "token": "0~3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "jobId": "81407977",
+                "section": "MAIN",
+                "sectionRank": 10,
+                "jobAdType": "ORGANIC",
+                "tags": {
+                    "mordor__flights": "mordor_571",
+                    "mordor__s": "0"
+                }
+            },
+            "tags": [
+                {
+                    "type": "EARLY_APPLICANT",
+                    "label": "Be an early applicant"
+                }
+            ],
+            "teaser": "Produce high quality outputs for the Spatial Data & Products Section. Focus on the ongoing maintenance, enhancement & development of spatial datasets.",
+            "title": "Spatial Information Officer",
+            "tracking": "ewogICJ0b2tlbiI6ICIwN2Q4MmRmMS0wYzViLTQ1MzYtOWU1Yy0wNDI1OGQ5MzQxMzVfMTAiCn0=",
+            "workTypes": [
+                "Full time"
+            ],
+            "workArrangements": {
+                "data": [
+                    {
+                        "id": "1",
+                        "label": {
+                            "text": "On-site"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "advertiser": {
+                "id": "40378949",
+                "description": "Insurance Appointments"
+            },
+            "bulletPoints": [],
+            "branding": {},
+            "classifications": [
+                {
+                    "classification": {
+                        "id": "1214",
+                        "description": "Insurance & Superannuation"
+                    },
+                    "subclassification": {
+                        "id": "6277",
+                        "description": "Brokerage"
+                    }
+                }
+            ],
+            "companyName": "Insurance Appointments",
+            "companyProfileStructuredDataId": 408058,
+            "displayStyle": {
+                "search": "A"
+            },
+            "displayType": "standard",
+            "id": "81407928",
+            "isFeatured": false,
+            "listingDate": "2025-01-15T22:59:06Z",
+            "listingDateDisplay": "2h ago",
+            "locations": [
+                {
+                    "label": "Hobart TAS",
+                    "countryCode": "AU",
+                    "seoHierarchy": [
+                        {
+                            "contextualName": "All Hobart TAS"
+                        },
+                        {
+                            "contextualName": "Tasmania TAS"
+                        }
+                    ]
+                }
+            ],
+            "salaryLabel": "",
+            "solMetadata": {
+                "searchRequestToken": "3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "token": "0~3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "jobId": "81407928",
+                "section": "MAIN",
+                "sectionRank": 11,
+                "jobAdType": "ORGANIC",
+                "tags": {
+                    "mordor__flights": "mordor_571",
+                    "mordor__s": "0"
+                }
+            },
+            "tags": [
+                {
+                    "type": "EARLY_APPLICANT",
+                    "label": "Be an early applicant"
+                }
+            ],
+            "teaser": "CAREER BROKING OPPORTUNITIES - TASMANIA - FOR PERSONS WITH PREVIOUS BROKER BACKGROUND.",
+            "title": "INSURANCE BROKING OPPORTUNITIES - (7) - HOBART and LAUNCESTON - TASMANIA",
+            "tracking": "ewogICJ0b2tlbiI6ICIwN2Q4MmRmMS0wYzViLTQ1MzYtOWU1Yy0wNDI1OGQ5MzQxMzVfMTEiCn0=",
+            "workTypes": [
+                "Full time"
+            ],
+            "workArrangements": {
+                "data": [
+                    {
+                        "id": "1",
+                        "label": {
+                            "text": "On-site"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "advertiser": {
+                "id": "586471",
+                "description": "Australian Bureau of Statistics"
+            },
+            "bulletPoints": [
+                "Salary from $113,288 to $130,959 (plus 15.4% superannuation)",
+                "12 months with the possibility of extension",
+                "temporary positions; full-time or part-time (flexible working arrangements)"
+            ],
+            "branding": {
+                "serpLogoUrl": "https://bx-branding-gateway.cloud.seek.com.au/25c83159-9dd3-645c-c7ef-783d3d12c45d.1/serpLogo"
+            },
+            "classifications": [
+                {
+                    "classification": {
+                        "id": "1210",
+                        "description": "Government & Defence"
+                    },
+                    "subclassification": {
+                        "id": "1409",
+                        "description": "Government - Federal"
+                    }
+                }
+            ],
+            "companyName": "Australian Bureau of Statistics",
+            "companyProfileStructuredDataId": 214,
+            "displayStyle": {
+                "search": "A"
+            },
+            "displayType": "standard",
+            "id": "81407638",
+            "isFeatured": false,
+            "listingDate": "2025-01-15T22:37:42Z",
+            "listingDateDisplay": "2h ago",
+            "locations": [
+                {
+                    "label": "Hobart TAS",
+                    "countryCode": "AU",
+                    "seoHierarchy": [
+                        {
+                            "contextualName": "All Hobart TAS"
+                        },
+                        {
+                            "contextualName": "Tasmania TAS"
+                        }
+                    ]
+                }
+            ],
+            "roleId": "product-owner",
+            "salaryLabel": "$113,288 - $130,959 (plus 15.4% superannuation)",
+            "solMetadata": {
+                "searchRequestToken": "3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "token": "0~3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "jobId": "81407638",
+                "section": "MAIN",
+                "sectionRank": 12,
+                "jobAdType": "ORGANIC",
+                "tags": {
+                    "mordor__flights": "mordor_571",
+                    "mordor__s": "0"
+                }
+            },
+            "tags": [
+                {
+                    "type": "EARLY_APPLICANT",
+                    "label": "Be an early applicant"
+                }
+            ],
+            "teaser": "Prioritise and shape requirements in alignment with the Program Backlog and Feature Roadmap.",
+            "title": "Product Owner (EL1), Data Sourcing Investment Planning",
+            "tracking": "ewogICJ0b2tlbiI6ICIwN2Q4MmRmMS0wYzViLTQ1MzYtOWU1Yy0wNDI1OGQ5MzQxMzVfMTIiCn0=",
+            "workTypes": [
+                "Full time"
+            ],
+            "workArrangements": {
+                "data": []
+            }
+        },
+        {
+            "advertiser": {
+                "id": "586471",
+                "description": "Australian Bureau of Statistics"
+            },
+            "bulletPoints": [
+                "Starting Salary from $141,432 - $163,493 plus 15.4% super",
+                "Permanent or Temporary position, full time or part time",
+                "Flexible working arrangements; hybrid model of working from home and office"
+            ],
+            "branding": {
+                "serpLogoUrl": "https://bx-branding-gateway.cloud.seek.com.au/25c83159-9dd3-645c-c7ef-783d3d12c45d.1/serpLogo"
+            },
+            "classifications": [
+                {
+                    "classification": {
+                        "id": "1210",
+                        "description": "Government & Defence"
+                    },
+                    "subclassification": {
+                        "id": "1409",
+                        "description": "Government - Federal"
+                    }
+                }
+            ],
+            "companyName": "Australian Bureau of Statistics",
+            "companyProfileStructuredDataId": 214,
+            "displayStyle": {
+                "search": "A"
+            },
+            "displayType": "standard",
+            "id": "81407583",
+            "isFeatured": false,
+            "listingDate": "2025-01-15T22:34:50Z",
+            "listingDateDisplay": "2h ago",
+            "locations": [
+                {
+                    "label": "Hobart TAS",
+                    "countryCode": "AU",
+                    "seoHierarchy": [
+                        {
+                            "contextualName": "All Hobart TAS"
+                        },
+                        {
+                            "contextualName": "Tasmania TAS"
+                        }
+                    ]
+                }
+            ],
+            "roleId": "project-manager",
+            "salaryLabel": "Salary from $141,432 - $163,493 plus 15.4% super",
+            "solMetadata": {
+                "searchRequestToken": "3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "token": "0~3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "jobId": "81407583",
+                "section": "MAIN",
+                "sectionRank": 13,
+                "jobAdType": "ORGANIC",
+                "tags": {
+                    "mordor__flights": "mordor_571",
+                    "mordor__s": "0"
+                }
+            },
+            "tags": [
+                {
+                    "type": "EARLY_APPLICANT",
+                    "label": "Be an early applicant"
+                }
+            ],
+            "teaser": "Help establish a digital first survey platform as part of modernising our data acquisition in the data sourcing division.",
+            "title": "Project Manager (EL2), Data Sourcing Investment Planning",
+            "tracking": "ewogICJ0b2tlbiI6ICIwN2Q4MmRmMS0wYzViLTQ1MzYtOWU1Yy0wNDI1OGQ5MzQxMzVfMTMiCn0=",
+            "workTypes": [
+                "Full time"
+            ],
+            "workArrangements": {
+                "data": []
+            }
+        },
+        {
+            "advertiser": {
+                "id": "4728926",
+                "description": "AUSTRALIAN FEDERAL POLICE"
+            },
+            "bulletPoints": [
+                "Six weeks annual leave + paid Christmas stand down + 4 extra rest days leave",
+                "18 days of paid personal leave per year",
+                "Incremental salary progression"
+            ],
+            "branding": {
+                "serpLogoUrl": "https://bx-branding-gateway.cloud.seek.com.au/4a1cc0f3-1891-9684-a79d-927eb6cb6e67.1/serpLogo"
+            },
+            "classifications": [
+                {
+                    "classification": {
+                        "id": "6281",
+                        "description": "Information & Communication Technology"
+                    },
+                    "subclassification": {
+                        "id": "6282",
+                        "description": "Architects"
+                    }
+                },
+                {
+                    "classification": {
+                        "id": "1210",
+                        "description": "Government & Defence"
+                    },
+                    "subclassification": {
+                        "id": "1409",
+                        "description": "Government - Federal"
+                    }
+                }
+            ],
+            "companyName": "Australian Federal Police",
+            "companyProfileStructuredDataId": 1096,
+            "displayStyle": {
+                "search": "A"
+            },
+            "displayType": "standard",
+            "id": "81407423",
+            "isFeatured": false,
+            "listingDate": "2025-01-15T22:23:42Z",
+            "listingDateDisplay": "3h ago",
+            "locations": [
+                {
+                    "label": "Hobart TAS",
+                    "countryCode": "AU",
+                    "seoHierarchy": [
+                        {
+                            "contextualName": "All Hobart TAS"
+                        },
+                        {
+                            "contextualName": "Tasmania TAS"
+                        }
+                    ]
+                }
+            ],
+            "roleId": "enterprise-solution-architect",
+            "salaryLabel": "$147,369.00 - $191,044.00 + 15.4% Super",
+            "solMetadata": {
+                "searchRequestToken": "3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "token": "0~3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "jobId": "81407423",
+                "section": "MAIN",
+                "sectionRank": 14,
+                "jobAdType": "ORGANIC",
+                "tags": {
+                    "mordor__flights": "mordor_571",
+                    "mordor__s": "0"
+                }
+            },
+            "tags": [
+                {
+                    "type": "EARLY_APPLICANT",
+                    "label": "Be an early applicant"
+                }
+            ],
+            "teaser": "As a strategic technologist and architect of the AFP, you will work closely with internal and external stakeholders to support new business directions",
+            "title": "Enterprise & Solution Architects - Operational Technology",
+            "tracking": "ewogICJ0b2tlbiI6ICIwN2Q4MmRmMS0wYzViLTQ1MzYtOWU1Yy0wNDI1OGQ5MzQxMzVfMTQiCn0=",
+            "workTypes": [
+                "Full time"
+            ],
+            "workArrangements": {
+                "data": [
+                    {
+                        "id": "2",
+                        "label": {
+                            "text": "Hybrid"
+                        }
+                    },
+                    {
+                        "id": "1",
+                        "label": {
+                            "text": "On-site"
+                        }
+                    }
+                ],
+                "displayText": "On-site, Hybrid"
+            }
+        },
+        {
+            "advertiser": {
+                "id": "4728926",
+                "description": "AUSTRALIAN FEDERAL POLICE"
+            },
+            "bulletPoints": [
+                "Six weeks annual leave + paid Christmas stand down + 4 extra rest days leave",
+                "Incremental salary progression",
+                "Access to ongoing training and development to support ambitions"
+            ],
+            "branding": {
+                "serpLogoUrl": "https://bx-branding-gateway.cloud.seek.com.au/4a1cc0f3-1891-9684-a79d-927eb6cb6e67.1/serpLogo"
+            },
+            "classifications": [
+                {
+                    "classification": {
+                        "id": "1210",
+                        "description": "Government & Defence"
+                    },
+                    "subclassification": {
+                        "id": "6359",
+                        "description": "Police & Corrections"
+                    }
+                },
+                {
+                    "classification": {
+                        "id": "1210",
+                        "description": "Government & Defence"
+                    },
+                    "subclassification": {
+                        "id": "1409",
+                        "description": "Government - Federal"
+                    }
+                }
+            ],
+            "companyName": "Australian Federal Police",
+            "companyProfileStructuredDataId": 1096,
+            "displayStyle": {
+                "search": "A"
+            },
+            "displayType": "standard",
+            "id": "81407383",
+            "isFeatured": false,
+            "listingDate": "2025-01-15T22:21:22Z",
+            "listingDateDisplay": "3h ago",
+            "locations": [
+                {
+                    "label": "Hobart TAS",
+                    "countryCode": "AU",
+                    "seoHierarchy": [
+                        {
+                            "contextualName": "All Hobart TAS"
+                        },
+                        {
+                            "contextualName": "Tasmania TAS"
+                        }
+                    ]
+                }
+            ],
+            "roleId": "intelligence-officer",
+            "salaryLabel": "$84,458 - $99,285 + 22% Composite & 15.4% Super",
+            "solMetadata": {
+                "searchRequestToken": "3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "token": "0~3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "jobId": "81407383",
+                "section": "MAIN",
+                "sectionRank": 15,
+                "jobAdType": "ORGANIC",
+                "tags": {
+                    "mordor__flights": "mordor_571",
+                    "mordor__s": "0"
+                }
+            },
+            "tags": [
+                {
+                    "type": "EARLY_APPLICANT",
+                    "label": "Be an early applicant"
+                }
+            ],
+            "teaser": "AFP Intelligence Operations is seeking individuals who are self-directed and have the flexibility and resilience to thrive in a dynamic and high tempo",
+            "title": "Intelligence Officer",
+            "tracking": "ewogICJ0b2tlbiI6ICIwN2Q4MmRmMS0wYzViLTQ1MzYtOWU1Yy0wNDI1OGQ5MzQxMzVfMTUiCn0=",
+            "workTypes": [
+                "Full time"
+            ],
+            "workArrangements": {
+                "data": [
+                    {
+                        "id": "2",
+                        "label": {
+                            "text": "Hybrid"
+                        }
+                    },
+                    {
+                        "id": "1",
+                        "label": {
+                            "text": "On-site"
+                        }
+                    }
+                ],
+                "displayText": "On-site, Hybrid"
+            }
+        },
+        {
+            "advertiser": {
+                "id": "34347561",
+                "description": "Country Care Management Services"
+            },
+            "bulletPoints": [
+                "Industry leading employer in the manufacturing mobility equipment industry",
+                "Training and development opportunities, with career progression openings",
+                "Supportive and inclusive work environment."
+            ],
+            "branding": {
+                "serpLogoUrl": "https://bx-branding-gateway.cloud.seek.com.au/eef4346b-01b4-4296-bc0c-b42c88f87d3c.1/serpLogo"
+            },
+            "classifications": [
+                {
+                    "classification": {
+                        "id": "6251",
+                        "description": "Administration & Office Support"
+                    },
+                    "subclassification": {
+                        "id": "6252",
+                        "description": "Administrative Assistants"
+                    }
+                }
+            ],
+            "companyName": "The Country Care Group",
+            "companyProfileStructuredDataId": 320160,
+            "displayStyle": {
+                "search": "A"
+            },
+            "displayType": "standard",
+            "id": "81407071",
+            "isFeatured": false,
+            "listingDate": "2025-01-15T22:08:49Z",
+            "listingDateDisplay": "3h ago",
+            "locations": [
+                {
+                    "label": "Hobart TAS",
+                    "countryCode": "AU",
+                    "seoHierarchy": [
+                        {
+                            "contextualName": "All Hobart TAS"
+                        },
+                        {
+                            "contextualName": "Tasmania TAS"
+                        }
+                    ]
+                }
+            ],
+            "roleId": "administration-officer",
+            "salaryLabel": "",
+            "solMetadata": {
+                "searchRequestToken": "3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "token": "0~3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "jobId": "81407071",
+                "section": "MAIN",
+                "sectionRank": 16,
+                "jobAdType": "ORGANIC",
+                "tags": {
+                    "mordor__flights": "mordor_571",
+                    "mordor__s": "0"
+                }
+            },
+            "teaser": "Join the Country Care Group team and contribute to improving lives through innovative healthcare solutions.",
+            "title": "Retail Administration Assistant",
+            "tracking": "ewogICJ0b2tlbiI6ICIwN2Q4MmRmMS0wYzViLTQ1MzYtOWU1Yy0wNDI1OGQ5MzQxMzVfMTYiCn0=",
+            "workTypes": [
+                "Full time"
+            ],
+            "workArrangements": {
+                "data": [
+                    {
+                        "id": "1",
+                        "label": {
+                            "text": "On-site"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "advertiser": {
+                "id": "15272126",
+                "description": "Department of Health"
+            },
+            "bulletPoints": [
+                "Work across a multi-disciplinary work environment",
+                "Work as part of a well-supported team that cares for all patient complexities.",
+                "Focus on ongoing professional and career development."
+            ],
+            "branding": {
+                "serpLogoUrl": "https://bx-branding-gateway.cloud.seek.com.au/fff049dc-99e5-4664-9977-ff6755f24d1b.1/serpLogo"
+            },
+            "classifications": [
+                {
+                    "classification": {
+                        "id": "1211",
+                        "description": "Healthcare & Medical"
+                    },
+                    "subclassification": {
+                        "id": "6342",
+                        "description": "Nursing - General Medical & Surgical"
+                    }
+                },
+                {
+                    "classification": {
+                        "id": "1210",
+                        "description": "Government & Defence"
+                    },
+                    "subclassification": {
+                        "id": "1411",
+                        "description": "Government - State"
+                    }
+                }
+            ],
+            "companyName": "Department of Health Tasmania",
+            "companyProfileStructuredDataId": 7574,
+            "displayStyle": {
+                "search": "A"
+            },
+            "displayType": "standard",
+            "id": "81405932",
+            "isFeatured": false,
+            "listingDate": "2025-01-15T21:25:38Z",
+            "listingDateDisplay": "4h ago",
+            "locations": [
+                {
+                    "label": "Hobart TAS",
+                    "countryCode": "AU",
+                    "seoHierarchy": [
+                        {
+                            "contextualName": "All Hobart TAS"
+                        },
+                        {
+                            "contextualName": "Tasmania TAS"
+                        }
+                    ]
+                }
+            ],
+            "roleId": "enrolled-nurse",
+            "salaryLabel": "$70,980-$78,179 (pro-rata) per annum + 11.5% Super",
+            "solMetadata": {
+                "searchRequestToken": "3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "token": "0~3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "jobId": "81405932",
+                "section": "MAIN",
+                "sectionRank": 17,
+                "jobAdType": "ORGANIC",
+                "tags": {
+                    "mordor__flights": "mordor_571",
+                    "mordor__s": "0"
+                }
+            },
+            "tags": [
+                {
+                    "type": "EARLY_APPLICANT",
+                    "label": "Be an early applicant"
+                }
+            ],
+            "teaser": "Exciting opportunity for an Enrolled Nurse to join the Department of Health!",
+            "title": "Enrolled Nurse - Transit Lounge (532778)",
+            "tracking": "ewogICJ0b2tlbiI6ICIwN2Q4MmRmMS0wYzViLTQ1MzYtOWU1Yy0wNDI1OGQ5MzQxMzVfMTciCn0=",
+            "workTypes": [
+                "Part time"
+            ],
+            "workArrangements": {
+                "data": [
+                    {
+                        "id": "1",
+                        "label": {
+                            "text": "On-site"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "advertiser": {
+                "id": "15272126",
+                "description": "Department of Health"
+            },
+            "bulletPoints": [
+                "Provide leadership and support to a dynamic and fast paced unit",
+                "Multiple permanent ANUM positions available",
+                "Enjoy professional development support and a great work/life balance"
+            ],
+            "branding": {
+                "serpLogoUrl": "https://bx-branding-gateway.cloud.seek.com.au/f2397264-a4da-4fff-84c4-8a78978847ae.1/serpLogo"
+            },
+            "classifications": [
+                {
+                    "classification": {
+                        "id": "1211",
+                        "description": "Healthcare & Medical"
+                    },
+                    "subclassification": {
+                        "id": "6344",
+                        "description": "Nursing - Management"
+                    }
+                },
+                {
+                    "classification": {
+                        "id": "1210",
+                        "description": "Government & Defence"
+                    },
+                    "subclassification": {
+                        "id": "1411",
+                        "description": "Government - State"
+                    }
+                }
+            ],
+            "companyName": "Department of Health Tasmania",
+            "companyProfileStructuredDataId": 7574,
+            "displayStyle": {
+                "search": "A"
+            },
+            "displayType": "standard",
+            "id": "81405907",
+            "isFeatured": false,
+            "listingDate": "2025-01-15T21:22:01Z",
+            "listingDateDisplay": "4h ago",
+            "locations": [
+                {
+                    "label": "Hobart TAS",
+                    "countryCode": "AU",
+                    "seoHierarchy": [
+                        {
+                            "contextualName": "All Hobart TAS"
+                        },
+                        {
+                            "contextualName": "Tasmania TAS"
+                        }
+                    ]
+                }
+            ],
+            "roleId": "Associate-Nurse-Unit-Manager",
+            "salaryLabel": "$106,570-$112,440 (pro-rata) per annum 11.5% super",
+            "solMetadata": {
+                "searchRequestToken": "3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "token": "0~3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "jobId": "81405907",
+                "section": "MAIN",
+                "sectionRank": 18,
+                "jobAdType": "ORGANIC",
+                "tags": {
+                    "mordor__flights": "mordor_571",
+                    "mordor__s": "0"
+                }
+            },
+            "tags": [
+                {
+                    "type": "EARLY_APPLICANT",
+                    "label": "Be an early applicant"
+                }
+            ],
+            "teaser": "The Short Stay Suite is seeking motivated, dynamic and high performing ANUM's who can inspire and lead our large team.",
+            "title": "Associate Nurse Unit Manager (ANUM) (523675L13)",
+            "tracking": "ewogICJ0b2tlbiI6ICIwN2Q4MmRmMS0wYzViLTQ1MzYtOWU1Yy0wNDI1OGQ5MzQxMzVfMTgiCn0=",
+            "workTypes": [
+                "Full time"
+            ],
+            "workArrangements": {
+                "data": [
+                    {
+                        "id": "1",
+                        "label": {
+                            "text": "On-site"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "advertiser": {
+                "id": "40991904",
+                "description": "Tas Denture Studios"
+            },
+            "bulletPoints": [],
+            "branding": {},
+            "classifications": [
+                {
+                    "classification": {
+                        "id": "1211",
+                        "description": "Healthcare & Medical"
+                    },
+                    "subclassification": {
+                        "id": "1372",
+                        "description": "Dental"
+                    }
+                }
+            ],
+            "companyProfileStructuredDataId": 0,
+            "displayType": "standard",
+            "id": "81405558",
+            "isFeatured": false,
+            "listingDate": "2025-01-15T20:36:27Z",
+            "listingDateDisplay": "4h ago",
+            "locations": [
+                {
+                    "label": "Hobart TAS",
+                    "countryCode": "AU",
+                    "seoHierarchy": [
+                        {
+                            "contextualName": "All Hobart TAS"
+                        },
+                        {
+                            "contextualName": "Tasmania TAS"
+                        }
+                    ]
+                }
+            ],
+            "roleId": "dental-technician",
+            "salaryLabel": "$60,000 – $80,000 per year",
+            "solMetadata": {
+                "searchRequestToken": "3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "token": "0~3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "jobId": "81405558",
+                "section": "MAIN",
+                "sectionRank": 19,
+                "jobAdType": "ORGANIC",
+                "tags": {
+                    "mordor__flights": "mordor_571",
+                    "mordor__s": "0"
+                }
+            },
+            "tags": [
+                {
+                    "type": "EARLY_APPLICANT",
+                    "label": "Be an early applicant"
+                }
+            ],
+            "teaser": "Dental technician  Hobart",
+            "title": "DENTAL  TECHNICIAN",
+            "tracking": "ewogICJ0b2tlbiI6ICIwN2Q4MmRmMS0wYzViLTQ1MzYtOWU1Yy0wNDI1OGQ5MzQxMzVfMTkiCn0=",
+            "workTypes": [
+                "Full time"
+            ],
+            "workArrangements": {
+                "data": [
+                    {
+                        "id": "1",
+                        "label": {
+                            "text": "On-site"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "advertiser": {
+                "id": "45080076",
+                "description": "Tasmanian Gourmet Seafoods"
+            },
+            "bulletPoints": [],
+            "branding": {},
+            "classifications": [
+                {
+                    "classification": {
+                        "id": "1212",
+                        "description": "Hospitality & Tourism"
+                    },
+                    "subclassification": {
+                        "id": "1549",
+                        "description": "Waiting Staff"
+                    }
+                }
+            ],
+            "companyProfileStructuredDataId": 0,
+            "displayType": "standard",
+            "id": "81401499",
+            "isFeatured": false,
+            "listingDate": "2025-01-15T19:45:54Z",
+            "listingDateDisplay": "5h ago",
+            "locations": [
+                {
+                    "label": "Cambridge, Hobart TAS",
+                    "countryCode": "AU",
+                    "seoHierarchy": [
+                        {
+                            "contextualName": "Cambridge TAS 7170"
+                        },
+                        {
+                            "contextualName": "All Hobart TAS"
+                        }
+                    ]
+                }
+            ],
+            "roleId": "front-of-house-staff",
+            "salaryLabel": "$27 – $34.99 per hour",
+            "solMetadata": {
+                "searchRequestToken": "3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "token": "0~3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "jobId": "81401499",
+                "section": "MAIN",
+                "sectionRank": 20,
+                "jobAdType": "ORGANIC",
+                "tags": {
+                    "mordor__flights": "mordor_571",
+                    "mordor__s": "0"
+                }
+            },
+            "teaser": "Looking for enthusiastic people to join our small close knit team.",
+            "title": "Front of House & Cooks",
+            "tracking": "ewogICJ0b2tlbiI6ICIwN2Q4MmRmMS0wYzViLTQ1MzYtOWU1Yy0wNDI1OGQ5MzQxMzVfMjAiCn0=",
+            "workTypes": [
+                "Casual/Vacation"
+            ],
+            "workArrangements": {
+                "data": [
+                    {
+                        "id": "1",
+                        "label": {
+                            "text": "On-site"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "advertiser": {
+                "id": "33465238",
+                "description": "Department of State Growth"
+            },
+            "bulletPoints": [
+                "Are you seeking a challenging & rewarding career with development opportunities?",
+                "An exciting position within a passionate and dynamic team.",
+                "Are you motivated to deliver positive outcomes for our private forest industry?"
+            ],
+            "branding": {
+                "serpLogoUrl": "https://bx-branding-gateway.cloud.seek.com.au/1680d33a-483f-4946-b755-f7d0501e86a5.1/serpLogo"
+            },
+            "classifications": [
+                {
+                    "classification": {
+                        "id": "6058",
+                        "description": "Mining, Resources & Energy"
+                    },
+                    "subclassification": {
+                        "id": "6075",
+                        "description": "Other"
+                    }
+                },
+                {
+                    "classification": {
+                        "id": "1210",
+                        "description": "Government & Defence"
+                    },
+                    "subclassification": {
+                        "id": "1411",
+                        "description": "Government - State"
+                    }
+                }
+            ],
+            "companyName": "Department of State Growth TAS",
+            "companyProfileStructuredDataId": 7606,
+            "displayStyle": {
+                "search": "A"
+            },
+            "displayType": "standard",
+            "id": "81403125",
+            "isFeatured": false,
+            "listingDate": "2025-01-15T13:17:57Z",
+            "listingDateDisplay": "12h ago",
+            "locations": [
+                {
+                    "label": "Hobart TAS",
+                    "countryCode": "AU",
+                    "seoHierarchy": [
+                        {
+                            "contextualName": "All Hobart TAS"
+                        },
+                        {
+                            "contextualName": "Tasmania TAS"
+                        }
+                    ]
+                }
+            ],
+            "roleId": "specialist",
+            "salaryLabel": "$109,099.00 to $123,395.00 per annum plus super",
+            "solMetadata": {
+                "searchRequestToken": "3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "token": "0~3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "jobId": "81403125",
+                "section": "MAIN",
+                "sectionRank": 21,
+                "jobAdType": "ORGANIC",
+                "tags": {
+                    "mordor__flights": "mordor_571",
+                    "mordor__s": "0"
+                }
+            },
+            "tags": [
+                {
+                    "type": "EARLY_APPLICANT",
+                    "label": "Be an early applicant"
+                }
+            ],
+            "teaser": "Promote private forestry in Tasmania, guiding stakeholders with information to implement programs and sustainably manage forests for forest products.",
+            "title": "Forestry Specialist (371570)",
+            "tracking": "ewogICJ0b2tlbiI6ICIwN2Q4MmRmMS0wYzViLTQ1MzYtOWU1Yy0wNDI1OGQ5MzQxMzVfMjEiCn0=",
+            "workTypes": [
+                "Full time"
+            ],
+            "workArrangements": {
+                "data": [
+                    {
+                        "id": "1",
+                        "label": {
+                            "text": "On-site"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "advertiser": {
+                "id": "574176",
+                "description": "University of Tasmania"
+            },
+            "bulletPoints": [
+                "Contribute to assessing the impacts of climate change on marine eco systems",
+                "Support the decisions & knowledge needed to frame and respond to climate change",
+                "This is a full time, fixed term position for three years"
+            ],
+            "branding": {
+                "serpLogoUrl": "https://bx-branding-gateway.cloud.seek.com.au/afbe638d-e5f1-457b-85c7-0ffc26d1ef9e.1/serpLogo"
+            },
+            "classifications": [
+                {
+                    "classification": {
+                        "id": "1223",
+                        "description": "Science & Technology"
+                    },
+                    "subclassification": {
+                        "id": "6218",
+                        "description": "Environmental, Earth & Geosciences"
+                    }
+                },
+                {
+                    "classification": {
+                        "id": "6123",
+                        "description": "Education & Training"
+                    },
+                    "subclassification": {
+                        "id": "6139",
+                        "description": "Other"
+                    }
+                }
+            ],
+            "companyName": "University of Tasmania",
+            "companyProfileStructuredDataId": 870,
+            "displayStyle": {
+                "search": "A"
+            },
+            "displayType": "standard",
+            "id": "81403119",
+            "isFeatured": false,
+            "listingDate": "2025-01-15T13:17:51Z",
+            "listingDateDisplay": "12h ago",
+            "locations": [
+                {
+                    "label": "Hobart TAS",
+                    "countryCode": "AU",
+                    "seoHierarchy": [
+                        {
+                            "contextualName": "All Hobart TAS"
+                        },
+                        {
+                            "contextualName": "Tasmania TAS"
+                        }
+                    ]
+                }
+            ],
+            "roleId": "research-associate",
+            "salaryLabel": "Academic level B $110,992 to $128,854 + 17% Super",
+            "solMetadata": {
+                "searchRequestToken": "3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "token": "0~3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+                "jobId": "81403119",
+                "section": "MAIN",
+                "sectionRank": 22,
+                "jobAdType": "ORGANIC",
+                "tags": {
+                    "mordor__flights": "mordor_571",
+                    "mordor__s": "0"
+                }
+            },
+            "tags": [
+                {
+                    "type": "EARLY_APPLICANT",
+                    "label": "Be an early applicant"
+                }
+            ],
+            "teaser": "Contribute to the Australian Antarctic Program Partnership (AAPP) a research program funded through the Antarctic Science Collaboration Initiative",
+            "title": "Research Associate - Carbon Biogeochemist",
+            "tracking": "ewogICJ0b2tlbiI6ICIwN2Q4MmRmMS0wYzViLTQ1MzYtOWU1Yy0wNDI1OGQ5MzQxMzVfMjIiCn0=",
+            "workTypes": [
+                "Full time"
+            ],
+            "workArrangements": {
+                "data": [
+                    {
+                        "id": "1",
+                        "label": {
+                            "text": "On-site"
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "gptTargeting": [
+        {
+            "key": "locale",
+            "value": "en-AU"
+        },
+        {
+            "key": "sta",
+            "value": "tas"
+        },
+        {
+            "key": "loc",
+            "value": "hobart"
+        },
+        {
+            "key": "area",
+            "value": ""
+        },
+        {
+            "key": "suburb",
+            "value": "hobarttas7000"
+        }
+    ],
+    "totalCount": 1068,
+    "info": {
+        "timeTaken": 22,
+        "source": "JobSearch-sm",
+        "experiment": "mordor_571",
+        "newSince": 1736990739
+    },
+    "userQueryId": "732e6a2bd61666d2619b2d8daf586345-0739378",
+    "location": {
+        "description": "Hobart TAS 7000",
+        "locationDescription": "Hobart",
+        "type": "Suburb",
+        "whereId": "23293",
+        "localisedDescriptions": {
+            "en": {
+                "contextualName": "Hobart TAS 7000"
+            }
+        }
+    },
+    "sortModes": [
+        {
+            "isActive": false,
+            "name": "Relevance",
+            "value": "KeywordRelevance"
+        },
+        {
+            "isActive": true,
+            "name": "Date",
+            "value": "ListedDate"
+        }
+    ],
+    "solMetadata": {
+        "requestToken": "3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+        "token": "0~3c242ffa-fe26-4a3c-9e50-e76a273a035b",
+        "sortMode": "DATE",
+        "locations": [
+            "Hobart TAS 7000",
+            "seek-23293"
+        ],
+        "locationDistance": 50,
+        "pageSize": 22,
+        "pageNumber": 1,
+        "totalJobCount": 1068,
+        "tags": {
+            "mordor:searchMarket": "UNIFIED_AU",
+            "mordor:result_count_rst": "1068",
+            "mordor:result_count_vec": "0",
+            "mordor:rt": "11",
+            "mordor_vs": "2",
+            "mordor:count_vec": "0",
+            "mordor__flights": "mordor_571",
+            "mordor:count_rst": "1068",
+            "mordor:count_ir": "0",
+            "mordor:result_count_ir": "0"
+        }
+    },
+    "joraCrossLink": {
+        "countrySpecificWhereSlug": "Hobart-TAS",
+        "href": "https://au.jora.com/jobs-in-Hobart-TAS",
+        "label": "jobs in Hobart TAS"
+    },
+    "facets": {
+        "distinctTitle": [
+            {
+                "id": "registered-nurse",
+                "count": 27,
+                "label": "Registered Nurse"
+            },
+            {
+                "id": "administration-officer",
+                "count": 15,
+                "label": "Administration Officer"
+            },
+            {
+                "id": "store-manager",
+                "count": 15,
+                "label": "Store Manager"
+            },
+            {
+                "id": "project-manager",
+                "count": 13,
+                "label": "Project Manager"
+            },
+            {
+                "id": "physiotherapist",
+                "count": 12,
+                "label": "Physiotherapist"
+            },
+            {
+                "id": "enrolled-nurse",
+                "count": 12,
+                "label": "Enrolled Nurse"
+            },
+            {
+                "id": "Sales",
+                "count": 11,
+                "label": "Sales Role"
+            },
+            {
+                "id": "rehabilitation-consultant",
+                "count": 11,
+                "label": "Rehabilitation Consultant"
+            },
+            {
+                "id": "delivery-driver",
+                "count": 10,
+                "label": "Delivery Driver"
+            },
+            {
+                "id": "medium-rigid-truck-driver",
+                "count": 10,
+                "label": "Medium Rigid Driver"
+            },
+            {
+                "id": "occupational-therapist",
+                "count": 10,
+                "label": "Occupational Therapist"
+            },
+            {
+                "id": "technical-officer",
+                "count": 9,
+                "label": "Technical Officer"
+            },
+            {
+                "id": "customer-service-representative-csr",
+                "count": 9,
+                "label": "Customer Service Representative"
+            },
+            {
+                "id": "speech-pathologist",
+                "count": 9,
+                "label": "Speech Pathologist"
+            },
+            {
+                "id": "registered-midwife",
+                "count": 9,
+                "label": "Registered Midwife"
+            },
+            {
+                "id": "team-leader",
+                "count": 8,
+                "label": "Team Leader"
+            },
+            {
+                "id": "assistant-store-manager",
+                "count": 8,
+                "label": "Assistant Store Manager"
+            },
+            {
+                "id": "administration",
+                "count": 8,
+                "label": "Administration Role"
+            },
+            {
+                "id": "manager",
+                "count": 8,
+                "label": "Manager"
+            },
+            {
+                "id": "medical-receptionist",
+                "count": 7,
+                "label": "Medical Receptionist"
+            }
+        ]
+    },
+    "searchParams": {
+        "sitekey": "AU-Main",
+        "sourcesystem": "houston",
+        "facets": "distinctTitle",
+        "userqueryid": "732e6a2bd61666d2619b2d8daf586345-0739378",
+        "userid": "9f193ee8-d4fc-49e0-9e5e-ceddcdd5e86d",
+        "usersessionid": "9f193ee8-d4fc-49e0-9e5e-ceddcdd5e86d",
+        "eventcapturesessionid": "9f193ee8-d4fc-49e0-9e5e-ceddcdd5e86d",
+        "where": "Hobart TAS 7000",
+        "page": "1",
+        "sortmode": "ListedDate",
+        "pagesize": "22",
+        "include": "seodata,joracrosslink,gptTargeting",
+        "locale": "en-AU",
+        "solid": "d6882e64-cd3f-46e9-9c23-15a69f50db4d"
+    }
+}`
