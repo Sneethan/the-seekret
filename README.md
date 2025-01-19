@@ -1,121 +1,71 @@
-# The Seekret
+# The Seekret - SEEK Job Monitor
 
-```
-                   (                                
-  *   )   )        )\ )             )            )  
-` )  /(( /(   (   (()/(   (   (  ( /((     (  ( /(  
- ( )(_))\()) ))\   /(_)) ))\ ))\ )\())(   ))\ )\()) 
-(_(_()|(_)\ /((_) (_))  /((_)((_|(_)(()\ /((_|_))/  
-|_   _| |(_|_))   / __|(_))(_)) | |(_|(_|_)) | |_   
-  | | | ' \/ -_)  \__ \/ -_) -_)| / / '_/ -_)|  _|  
-  |_| |_||_\___|  |___/\___\___||_\_\_| \___| \__|  
-                                                    
-```
+A versatile job monitoring solution that watches SEEK.com.au for new job postings and notifies you through Discord. Available in two flavors:
 
-A powerful Python bot that monitors SEEK job listings and delivers real-time job alerts to your Discord server.
+1. **CLI Version**: A lightweight command-line tool that monitors jobs and sends notifications via Discord webhooks
+2. **Bot Version**: A full Discord bot implementation with interactive commands and rich features
 
-## Features
+## 🚀 Quick Start
 
-- 🔍 Smart job monitoring on SEEK Australia
-- 🌐 Customizable location filtering (default: Hobart)
-- 🎯 Keyword-based job filtering
-- 📢 Real-time Discord notifications with rich embeds
-- 🔄 Duplicate prevention using SQLite database
-- ⏰ Configurable check intervals
-- 📝 Detailed console logging with emoji indicators
-- 🔒 Secure environment variable configuration
-- 📊 Job statistics tracking and reporting
-- 🚫 Company and keyword filtering options
-- 💰 Salary-based filtering
-- 🏷️ Smart tagging system
-
-## Setup
-
-1. Clone this repository:
-```bash
-git clone https://github.com/yourusername/the-seekret.git
-cd the-seekret
-```
-
+1. Clone this repository
 2. Install dependencies:
-```bash
-pip install -r requirements.txt
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Copy the appropriate `.env.example` file from either `cli/` or `bot/` directory to create your `.env`
+4. Run the desired version:
+   ```bash
+   # For CLI version
+   python run.py cli
+   
+   # For Bot version
+   python run.py bot
+   ```
+
+## 📂 Project Structure
+
+```
+jobbot/
+├── run.py              # Central runner script
+├── requirements.txt    # Combined dependencies
+├── cli/               # CLI Implementation
+│   ├── .env.example
+│   ├── README.md
+│   └── seek_jobs_monitor.py
+└── bot/               # Bot Implementation
+    ├── .env.example
+    ├── README.md
+    ├── bot.py
+    └── seek_jobs_monitor.py
 ```
 
-3. Configure Discord webhook:
-   - Open Discord server settings
-   - Navigate to Integrations > Webhooks
-   - Create a new webhook
-   - Choose a channel for job alerts
-   - Copy the webhook URL
+## 🔧 Configuration
 
-4. Set up environment variables:
-   - Copy `.env.example` to `.env`:
-     ```bash
-     cp .env.example .env
-     ```
-   - Edit `.env` with your settings:
-     - `DISCORD_WEBHOOK_URL`: Your Discord webhook URL
-     - `CHECK_INTERVAL`: Time between checks (seconds)
-     - `LOCATION`: Target job location
-     - `KEYWORDS`: Comma-separated job keywords
-     - `MAX_JOBS`: Maximum jobs to fetch per check
-     - `SALARY_MIN`: Minimum salary filter
-     - `EXCLUDED_COMPANIES`: Companies to exclude
-     - `REQUIRED_KEYWORDS`: Must-have keywords
-     - `EXCLUDED_KEYWORDS`: Keywords to filter out
+Each version has its own configuration requirements. Please refer to the README.md in the respective directories:
 
-## Usage
+- [CLI Version Documentation](cli/README.md)
+- [Bot Version Documentation](bot/README.md)
 
-Start the bot:
-```bash
-python seek_jobs_monitor.py
-```
+## 🌟 Features
 
-The bot will:
-- Initialize the SQLite database (`jobs.db`)
-- Start monitoring SEEK jobs based on your filters
-- Post new jobs to Discord in real-time
-- Log all activity to the console
-- Track and display job statistics
+### CLI Version
+- Lightweight and efficient
+- Discord webhook notifications
+- Job filtering capabilities
+- Local SQLite database for job tracking
 
-## Console Indicators
+### Bot Version
+- Full Discord bot integration
+- Interactive commands
+- Rich embed messages
+- Advanced job filtering
+- Customizable notifications
+- Database persistence
 
-The bot uses emoji-based logging for clarity:
-- 🚀 Bot startup
-- ⚡ Job check initiated
-- ✓ Success messages
-- ℹ Information updates
-- ✗ Error notifications
-- 💤 Sleep/wait states
-- 📊 Statistics updates
+## 📝 License
 
-## Discord Notifications
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-Each job alert includes:
-- 📋 Job title with direct SEEK link
-- 🏢 Company name and logo
-- 📍 Location details
-- 💼 Employment type
-- 💰 Salary information (when available)
-- 📝 Job description preview
-- 🔑 Key bullet points
-- ⏰ Posting date and time
-- 🏷️ Relevant tags
+## 🤝 Contributing
 
-## Database
-
-The bot uses SQLite (`jobs.db`) to:
-- Prevent duplicate job alerts
-- Track processed job listings
-- Maintain posting history
-- Generate job statistics
-- Track company activity
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details. 
+Contributions are welcome! Please feel free to submit a Pull Request. 
