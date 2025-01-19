@@ -1,6 +1,6 @@
 # JobBot - Discord Bot Version
 
-A full-featured Discord bot implementation that monitors SEEK job listings and provides interactive commands for job searching and notifications.
+A Discord bot implementation that monitors SEEK job listings and provides interactive job notifications with save and reminder functionality.
 
 ```
                    (                                
@@ -14,27 +14,26 @@ A full-featured Discord bot implementation that monitors SEEK job listings and p
                                                     
 ```
 
-## 🤖 Bot Features
+## 🤖 Features
 
-- `/jobs` - Search and filter jobs
-- `/stats` - View job statistics
-- `/configure` - Update bot settings
-- `/help` - List available commands
-- `/filters` - Manage job filters
-- `/subscribe` - Set up job alerts
-- `/unsubscribe` - Remove job alerts
+- Automatic job monitoring and posting
+- Interactive job notifications with action buttons
+- Job saving functionality with reminders
+- Automatic job filtering based on criteria
+- Console output logging to Discord channel
 
 ## 🔧 Configuration
 
 Copy `.env.example` to `.env` and configure:
 
 ```bash
-# Required
+# Required Discord Settings
 DISCORD_BOT_TOKEN=your_bot_token_here
-DISCORD_GUILD_ID=your_guild_id
-DISCORD_CHANNEL_ID=your_channel_id
+DISCORD_JOBS_CHANNEL_ID=channel_for_job_posts
+DISCORD_LOGS_CHANNEL_ID=channel_for_console_logs
+DISCORD_SAVED_JOBS_CHANNEL_ID=channel_for_saved_jobs
 
-# Optional (with defaults)
+# Job Search Settings
 CHECK_INTERVAL=300          # Time between checks in seconds
 LOCATION="Hobart TAS 7000"  # Target job location
 SALARY_MIN=0               # Minimum salary filter
@@ -43,10 +42,6 @@ SALARY_MIN=0               # Minimum salary filter
 EXCLUDED_COMPANIES=        # Companies to exclude
 REQUIRED_KEYWORDS=         # Must-have keywords
 EXCLUDED_KEYWORDS=         # Keywords to filter out
-
-# Discord Bot Settings
-COMMAND_PREFIX=!           # Legacy command prefix
-BOT_STATUS=watching jobs   # Bot's status message
 ```
 
 ## 🚀 Running
@@ -63,44 +58,44 @@ You can run the bot version in two ways:
    python bot.py
    ```
 
-## 💬 Discord Commands
+## 💬 Job Notifications
 
-### Job Search
-- `/jobs search <keywords>` - Search for jobs
-- `/jobs latest` - Show latest listings
-- `/jobs filter <options>` - Apply search filters
+Each job post includes interactive buttons:
+- 📝 **Apply** - Direct link to the SEEK job listing
+- ❌ **Not Interested** - Dismiss the job post
+- 📌 **Save** - Save the job for later with reminders
 
-### Notifications
-- `/subscribe <keywords>` - Get notified about specific jobs
-- `/unsubscribe` - Stop notifications
-- `/configure alerts <options>` - Customize notifications
+## 📌 Saved Jobs
 
-### Statistics
-- `/stats today` - Today's job stats
-- `/stats trends` - Job posting trends
-- `/stats companies` - Top hiring companies
+When you save a job:
+- It's tracked in the database
+- You'll receive reminder notifications
+- Reminders include options to:
+  - ✅ Mark as applied
+  - ⏰ Remind later
+  - ❌ Dismiss the job
 
-### Settings
-- `/configure location <location>` - Set job location
-- `/configure salary <amount>` - Set minimum salary
-- `/configure interval <minutes>` - Set check interval
+Reminders are sent:
+- Once per day
+- Up to 3 times total
+- In the designated saved jobs channel
 
 ## 📊 Console Output
 
-The bot uses emoji-based logging:
+The bot logs its activity with emoji indicators:
 - 🚀 Bot startup
 - ⚡ Job check initiated
 - ✓ Success messages
 - ℹ Information updates
 - ✗ Error notifications
-- 💤 Sleep/wait states
 - 📊 Statistics updates
+
+All console output is also sent to the designated logs channel.
 
 ## 💾 Database
 
 The bot uses SQLite (`jobs.db`) to store:
 - Job listings and metadata
-- User preferences and subscriptions
-- Command history and statistics
-- Filter configurations
-- Notification settings 
+- Saved jobs and their status
+- Reminder tracking
+- Job statistics 

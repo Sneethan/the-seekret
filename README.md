@@ -1,3 +1,5 @@
+![JobBot Banner](https://pub-8017706c57924d50b414b3be7f36d1aa.r2.dev/seekret_banner.png)
+
 # The Seekret - SEEK Job Monitor
 
 A versatile job monitoring solution that watches SEEK.com.au for new job postings and notifies you through Discord. Available in two flavors:
