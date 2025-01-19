@@ -1,4 +1,4 @@
-# JobBot - CLI Version
+# The Seekret - CLI Version
 
 The CLI version of JobBot is a lightweight command-line tool that monitors SEEK job listings and delivers notifications through Discord webhooks.
 

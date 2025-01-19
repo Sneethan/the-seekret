@@ -1,4 +1,4 @@
-# JobBot - Discord Bot Version
+# The Seekret - Discord Bot Version
 
 A Discord bot implementation that monitors SEEK job listings and provides interactive job notifications with save and reminder functionality.
 
