@@ -9,6 +9,8 @@ import seek_jobs_monitor as seek
 import sys
 from io import StringIO
 import random
+import aiosqlite
+import signal
 
 # Load environment variables
 load_dotenv()
@@ -21,6 +23,7 @@ SAVED_JOBS_CHANNEL_ID = int(os.getenv('DISCORD_SAVED_JOBS_CHANNEL_ID', '0'))
 
 # Global flag for shutdown
 shutdown_flag = False
+shutdown_event = None  # Will be initialized in main()
 
 # Global bot instance for job posting
 bot_instance = None
@@ -56,11 +59,13 @@ async def save_job_for_user(job_id: str, user_id: str, message_id: str):
     """Save a job for a user and set up initial reminder."""
     try:
         async with seek.aiosqlite.connect(seek.DATABASE_PATH) as db:
+            # Store dates in UTC ISO format for consistency
+            current_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
             await db.execute('''
                 INSERT OR REPLACE INTO saved_jobs 
                 (job_id, user_id, saved_date, last_reminder_date, reminder_count, status, message_id)
-                VALUES (?, ?, ?, NULL, 0, 'saved', ?)
-            ''', (job_id, str(user_id), datetime.now().isoformat(), message_id))
+                VALUES (?, ?, datetime(?), NULL, 0, 'saved', ?)
+            ''', (job_id, str(user_id), current_time, message_id))
             await db.commit()
     except Exception as e:
         print(f"Error saving job for user: {str(e)}")
@@ -69,6 +74,7 @@ async def save_job_for_user(job_id: str, user_id: str, message_id: str):
 async def check_saved_jobs_reminders():
     """Check saved jobs and send reminders if needed."""
     if not bot_instance:
+        print("⚠ Bot instance not available for reminders")
         return
         
     try:
@@ -77,26 +83,59 @@ async def check_saved_jobs_reminders():
             print("⚠ Could not find saved jobs channel")
             return
             
+        print(f"📊 Checking saved jobs in channel: {channel.name}")
         async with seek.aiosqlite.connect(seek.DATABASE_PATH) as db:
+            db.row_factory = aiosqlite.Row  # Enable dictionary access
+            print("🔍 Querying for jobs needing reminders...")
+            
+            # Debug current time
+            current_time = datetime.now()
+            print(f"🕒 Current time: {current_time.isoformat()}")
+            
             # Get saved jobs that haven't had a reminder in 24 hours and have less than 3 reminders
-            async with db.execute('''
-                SELECT sj.*, j.title, j.company
+            query = '''
+                SELECT sj.*, j.title, j.company,
+                       CASE 
+                           WHEN sj.last_reminder_date IS NULL THEN 'never reminded'
+                           ELSE datetime(sj.last_reminder_date)
+                       END as last_reminder,
+                       datetime('now') as current_time
                 FROM saved_jobs sj
                 JOIN jobs j ON sj.job_id = j.id
                 WHERE sj.status = 'saved'
-                AND (sj.last_reminder_date IS NULL OR 
-                     datetime(sj.last_reminder_date) <= datetime('now', '-1 day'))
+                AND (
+                    sj.last_reminder_date IS NULL 
+                    OR 
+                    datetime(sj.last_reminder_date) <= datetime('now', '-1 day')
+                )
                 AND sj.reminder_count < 3
-            ''') as cursor:
+            '''
+            
+            print(f"🔍 Executing query: {query}")
+            async with db.execute(query) as cursor:
                 saved_jobs = await cursor.fetchall()
                 
+            job_count = len(saved_jobs) if saved_jobs else 0
+            print(f"📝 Found {job_count} jobs needing reminders")
+            
+            if job_count > 0:
+                # Debug first job's reminder info
+                first_job = saved_jobs[0]
+                print(f"📋 First job debug info:")
+                print(f"  - Job ID: {first_job['job_id']}")
+                print(f"  - Last reminder: {first_job['last_reminder']}")
+                print(f"  - Current DB time: {first_job['current_time']}")
+                print(f"  - Reminder count: {first_job['reminder_count']}")
+                print(f"  - Status: {first_job['status']}")
+            
             for job in saved_jobs:
                 try:
+                    print(f"📬 Sending reminder for job {job['job_id']} to user {job['user_id']}")
                     # Create reminder embed
                     embed = discord.Embed(
                         title="Job Application Reminder",
                         description=random.choice(REMINDER_MESSAGES),
-                        color=discord.Color.blue()
+                        color=discord.Color.from_str('#fd0585')
                     )
                     embed.add_field(
                         name="Job Details",
@@ -114,20 +153,23 @@ async def check_saved_jobs_reminders():
                         view=view
                     )
                     
-                    # Update reminder count and date
+                    # Update reminder count and date using UTC time
+                    current_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
                     await db.execute('''
                         UPDATE saved_jobs 
-                        SET last_reminder_date = ?, reminder_count = reminder_count + 1
+                        SET last_reminder_date = datetime(?), reminder_count = reminder_count + 1
                         WHERE job_id = ? AND user_id = ?
-                    ''', (datetime.now().isoformat(), job['job_id'], job['user_id']))
+                    ''', (current_time, job['job_id'], job['user_id']))
+                    await db.commit()  # Commit after each reminder to ensure it's saved
                     
                 except Exception as e:
                     print(f"Error sending reminder for job {job['job_id']}: {str(e)}")
-            
-            await db.commit()
+                    print(f"Full job data: {dict(job)}")  # Debug full job data on error
             
     except Exception as e:
         print(f"Error checking saved jobs: {str(e)}")
+        import traceback
+        print(traceback.format_exc())  # Print full traceback for debugging
 
 class ReminderActionsView(discord.ui.View):
     def __init__(self, job_id: str):
@@ -142,7 +184,7 @@ class ReminderActionsView(discord.ui.View):
             url=f"https://www.seek.com.au/job/{job_id}"
         ))
 
-    @discord.ui.button(label="I've Applied!", style=discord.ButtonStyle.secondary, emoji="✅")
+    @discord.ui.button(label="I've Applied!", style=discord.ButtonStyle.secondary, emoji="<:checkbox:1333302678339452969>")
     async def applied_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Handle the applied button click"""
         async with seek.aiosqlite.connect(seek.DATABASE_PATH) as db:
@@ -156,15 +198,16 @@ class ReminderActionsView(discord.ui.View):
         await interaction.response.send_message("Congratulations on applying! 🎉", ephemeral=True)
         await interaction.message.delete()
 
-    @discord.ui.button(label="Remind Later", style=discord.ButtonStyle.secondary, emoji="⏰")
+    @discord.ui.button(label="Remind Later", style=discord.ButtonStyle.secondary, emoji="<:alarmclock:1333302675865079891>")
     async def remind_later_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Handle the remind later button click"""
         async with seek.aiosqlite.connect(seek.DATABASE_PATH) as db:
+            current_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
             await db.execute('''
                 UPDATE saved_jobs 
-                SET last_reminder_date = ?
+                SET last_reminder_date = datetime(?)
                 WHERE job_id = ? AND user_id = ?
-            ''', (datetime.now().isoformat(), self.job_id, str(interaction.user.id)))
+            ''', (current_time, self.job_id, str(interaction.user.id)))
             await db.commit()
         
         await interaction.response.send_message("I'll remind you again tomorrow!", ephemeral=True)
@@ -185,7 +228,7 @@ class ReminderActionsView(discord.ui.View):
         await interaction.message.delete()
 
 class JobBot(commands.Bot):
-    def __init__(self):
+    def __init__(self, shutdown_event):
         # Set up all intents we need
         intents = discord.Intents.default()
         intents.message_content = True
@@ -199,9 +242,30 @@ class JobBot(commands.Bot):
         
         # Set up output capture
         self.output_capture = None
+        self.shutdown_event = shutdown_event
         
         # Start the reminder check loop
         self.reminder_check_loop.start()
+    
+    async def close(self):
+        """Cleanup when the bot is shutting down."""
+        print("🛑 Bot is shutting down...")
+        
+        # Stop all background tasks
+        self.reminder_check_loop.cancel()
+        
+        # Restore stdout
+        if self.output_capture:
+            sys.stdout = sys.__stdout__
+        
+        # Close the database connections
+        try:
+            await seek.cleanup()
+        except Exception as e:
+            print(f"Error during cleanup: {e}")
+        
+        await super().close()
+        print("✓ Cleanup completed")
     
     async def setup_hook(self):
         """Setup hook that runs when the bot is first starting"""
@@ -226,23 +290,23 @@ class JobBot(commands.Bot):
     @tasks.loop(hours=1)  # Check for reminders every hour
     async def reminder_check_loop(self):
         """Check for jobs that need reminders"""
-        await check_saved_jobs_reminders()
+        print("🔔 Checking for job reminders...")
+        try:
+            await check_saved_jobs_reminders()
+            print("✓ Reminder check completed")
+        except Exception as e:
+            print(f"❌ Error in reminder check: {str(e)}")
     
     @reminder_check_loop.before_loop
     async def before_reminder_check(self):
         """Wait until the bot is ready before starting the loop"""
         await self.wait_until_ready()
+        print("✓ Reminder check loop initialized")
 
     async def continuous_job_check(self):
         """Continuous job checking that mimics seek_jobs_monitor's behavior"""
-        global shutdown_flag
-        
-        print("\033[96m" + seek.LOGO + "\033[0m")  # Print logo in cyan color
-        print("🚀 Powering up The Seekret")
-        print("ℹ Press Ctrl+C to exit gracefully")
-        
         try:
-            while not shutdown_flag:
+            while not self.shutdown_event.is_set():
                 # Process jobs using our own implementation
                 print(f"⚡ Starting job check at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
                 
@@ -292,27 +356,18 @@ class JobBot(commands.Bot):
                     except Exception as e:
                         print(f"⚠ Error getting statistics: {str(e)}")
                 
-                # Break into smaller sleep intervals to check shutdown_flag more frequently
+                # Break into smaller sleep intervals to check shutdown_event
                 for _ in range(seek.CHECK_INTERVAL):
-                    if shutdown_flag:
+                    if self.shutdown_event.is_set():
                         break
                     await asyncio.sleep(1)
                     
+        except asyncio.CancelledError:
+            print("Job check loop cancelled")
         except Exception as e:
             print(f"\n❌ Error in main loop: {str(e)}")
         finally:
-            await seek.cleanup()
-            print("👋 Goodbye!")
-
-    def handle_shutdown(self):
-        """Handle shutdown signal"""
-        global shutdown_flag
-        if not shutdown_flag:
-            print("\n🛑 Shutdown signal received. Cleaning up...")
-            shutdown_flag = True
-        else:
-            print("\n⚠ Force quitting... (Press Ctrl+C again to force exit)")
-            os._exit(1)
+            print("Job check loop ended")
 
 class JobActionsView(discord.ui.View):
     def __init__(self, job_id: str):
@@ -489,20 +544,36 @@ async def post_job(job):
 
 async def main():
     """Main function to run the bot"""
-    # Initialize the database
-    await seek.setup_database()
-    await setup_saved_jobs_table()
-    
-    # Create and run the bot
-    bot = JobBot()
-    
-    # Set up signal handlers
-    import signal
-    signal.signal(signal.SIGINT, lambda s, f: bot.handle_shutdown())
-    signal.signal(signal.SIGTERM, lambda s, f: bot.handle_shutdown())
-    
-    async with bot:
-        await bot.start(DISCORD_TOKEN)
+    try:
+        print("📦 Initializing database...")
+        # Initialize the database
+        await seek.setup_database()
+        await setup_saved_jobs_table()
+        print("✓ Database initialization complete")
+        
+        # Create shutdown event
+        shutdown_event = asyncio.Event()
+        
+        # Create and run the bot
+        bot = JobBot(shutdown_event)
+        
+        # Set up signal handlers for graceful shutdown
+        loop = asyncio.get_event_loop()
+        
+        def signal_handler():
+            print("\n🛑 Shutdown signal received. Cleaning up...")
+            shutdown_event.set()
+            asyncio.create_task(bot.close())
+        
+        for sig in (signal.SIGINT, signal.SIGTERM):
+            loop.add_signal_handler(sig, signal_handler)
+        
+        async with bot:
+            await bot.start(DISCORD_TOKEN)
+            
+    except Exception as e:
+        print(f"❌ Critical error in main: {str(e)}")
+        raise  # Re-raise to ensure the error is not silently caught
 
 if __name__ == "__main__":
     try:

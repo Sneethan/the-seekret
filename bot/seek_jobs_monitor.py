@@ -27,7 +27,10 @@ LOGO = '''
 # Configuration
 WEBHOOK_URL = os.getenv('DISCORD_WEBHOOK_URL')
 CHECK_INTERVAL = int(os.getenv('CHECK_INTERVAL', '300'))  # Default 5 minutes
-DATABASE_PATH = 'jobs.db'
+
+# Use environment variable for database path with fallback to local path
+DATABASE_PATH = os.getenv('DATABASE_PATH', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'jobs.db'))
+print(f"📂 Using database at: {DATABASE_PATH}")
 
 # Global flag for shutdown
 shutdown_flag = False
@@ -79,54 +82,37 @@ SEEK_HEADERS = {
 SEEK_URL = "https://www.seek.com.au/api/jobsearch/v5/search"
 
 async def setup_database():
-    """Initialize the SQLite database with migrations."""
-    async with aiosqlite.connect(DATABASE_PATH) as db:
-        # Get current columns
-        try:
-            async with db.execute("PRAGMA table_info(jobs)") as cursor:
-                current_columns = {row[1] for row in await cursor.fetchall()}
-        except Exception:
-            current_columns = set()
-        
-        # Create base table if it doesn't exist
-        if not current_columns:
+    """Initialize the database."""
+    print(f"🗄️ Setting up database at: {DATABASE_PATH}")
+    try:
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            # Create jobs table
             await db.execute('''
                 CREATE TABLE IF NOT EXISTS jobs (
                     id TEXT PRIMARY KEY,
                     title TEXT,
                     company TEXT,
+                    company_id TEXT,
+                    location TEXT,
+                    salary TEXT,
+                    work_type TEXT,
+                    work_arrangement TEXT,
+                    classification TEXT,
+                    subclassification TEXT,
+                    description TEXT,
+                    bullet_points TEXT,
                     posted_date TEXT,
-                    processed_date TEXT
+                    processed_date TEXT,
+                    display_type TEXT,
+                    is_featured INTEGER,
+                    tags TEXT
                 )
             ''')
-            current_columns = {'id', 'title', 'company', 'posted_date', 'processed_date'}
-        
-        # Add new columns if they don't exist
-        new_columns = {
-            'company_id': 'TEXT',
-            'location': 'TEXT',
-            'salary': 'TEXT',
-            'work_type': 'TEXT',
-            'work_arrangement': 'TEXT',
-            'classification': 'TEXT',
-            'subclassification': 'TEXT',
-            'description': 'TEXT',
-            'bullet_points': 'TEXT',
-            'display_type': 'TEXT',
-            'is_featured': 'INTEGER',
-            'tags': 'TEXT'
-        }
-        
-        for column, type_ in new_columns.items():
-            if column not in current_columns:
-                try:
-                    await db.execute(f'ALTER TABLE jobs ADD COLUMN {column} {type_}')
-                    print(f"✓ Added new column: {column}")
-                except Exception as e:
-                    print(f"⚠ Error adding column {column}: {str(e)}")
-        
-        await db.commit()
-    print("✓ Database initialized and migrated")
+            await db.commit()
+            print("✓ Jobs table initialized")
+    except Exception as e:
+        print(f"❌ Error setting up database: {str(e)}")
+        raise  # Re-raise to ensure the error is not silently caught
 
 async def is_job_processed(db, job_id):
     """Check if a job has already been processed."""

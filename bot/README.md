@@ -33,6 +33,9 @@ DISCORD_JOBS_CHANNEL_ID=channel_for_job_posts
 DISCORD_LOGS_CHANNEL_ID=channel_for_console_logs
 DISCORD_SAVED_JOBS_CHANNEL_ID=channel_for_saved_jobs
 
+# Database Configuration
+DATABASE_PATH=/path/to/your/production/jobs.db  # Optional: Defaults to local jobs.db in bot directory
+
 # Job Search Settings
 CHECK_INTERVAL=300          # Time between checks in seconds
 LOCATION="Hobart TAS 7000"  # Target job location
