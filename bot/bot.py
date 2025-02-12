@@ -11,6 +11,7 @@ from io import StringIO
 import random
 import aiosqlite
 import signal
+from functools import lru_cache
 
 # Load environment variables
 load_dotenv()
@@ -27,6 +28,63 @@ shutdown_event = None  # Will be initialized in main()
 
 # Global bot instance for job posting
 bot_instance = None
+
+# Database connection pool
+class DatabasePool:
+    def __init__(self):
+        self._pool = []
+        self._pool_lock = asyncio.Lock()
+        self._max_size = 5  # Maximum number of connections to keep in pool
+
+    async def get_connection(self):
+        async with self._pool_lock:
+            if self._pool:
+                return self._pool.pop()
+            return await aiosqlite.connect(seek.DATABASE_PATH)
+
+    async def release_connection(self, conn):
+        async with self._pool_lock:
+            if len(self._pool) < self._max_size:
+                self._pool.append(conn)
+            else:
+                await conn.close()
+
+    async def cleanup(self):
+        async with self._pool_lock:
+            while self._pool:
+                conn = self._pool.pop()
+                await conn.close()
+
+# Global database pool instance
+db_pool = DatabasePool()
+
+# Cache for job data
+@lru_cache(maxsize=1000)
+def get_job_cache_key(job_id: str, user_id: str = None):
+    """Generate a cache key for job data"""
+    return f"{job_id}:{user_id if user_id else '*'}"
+
+async def get_cached_job_data(job_id: str, user_id: str = None):
+    """Get job data with caching"""
+    cache_key = get_job_cache_key(job_id, user_id)
+    
+    # Try to get a connection from the pool
+    conn = await db_pool.get_connection()
+    try:
+        conn.row_factory = aiosqlite.Row
+        async with conn.execute(
+            '''
+            SELECT j.*, sj.user_id, sj.status, sj.saved_date
+            FROM jobs j
+            LEFT JOIN saved_jobs sj ON j.id = sj.job_id AND sj.user_id = ?
+            WHERE j.id = ?
+            ''',
+            (user_id, job_id) if user_id else (None, job_id)
+        ) as cursor:
+            job_data = await cursor.fetchone()
+            return dict(job_data) if job_data else None
+    finally:
+        await db_pool.release_connection(conn)
 
 # Reminder messages
 REMINDER_MESSAGES = [
@@ -181,66 +239,171 @@ class ReminderActionsView(discord.ui.View):
             label="Apply Now",
             style=discord.ButtonStyle.link,
             emoji="<:blog:1330298579377590376>",
-            url=f"https://www.seek.com.au/job/{job_id}"
+            url=f"https://www.seek.com.au/job/{job_id}" if job_id != "*" else "https://www.seek.com.au"
         ))
 
-    @discord.ui.button(label="I've Applied!", style=discord.ButtonStyle.secondary, emoji="<:checkbox:1333302678339452969>")
+    @discord.ui.button(
+        label="I've Applied!",
+        style=discord.ButtonStyle.secondary,
+        emoji="<:checkbox:1333302678339452969>",
+        custom_id="applied"  # Base custom_id, job_id will be extracted from the message
+    )
     async def applied_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Handle the applied button click"""
-        async with seek.aiosqlite.connect(seek.DATABASE_PATH) as db:
-            await db.execute('''
-                UPDATE saved_jobs 
-                SET status = 'applied'
-                WHERE job_id = ? AND user_id = ?
-            ''', (self.job_id, str(interaction.user.id)))
-            await db.commit()
-        
-        # Update the message content to show it's been handled
-        embed = interaction.message.embeds[0]
-        embed.description = "✅ Marked as applied!"
-        embed.color = discord.Color.green()
-        
-        await interaction.response.edit_message(embed=embed, view=None)
-        await interaction.message.delete(delay=3)  # Delete after 3 seconds
+        try:
+            # Extract job ID from the message URL or embed field
+            message_embeds = interaction.message.embeds
+            if not message_embeds:
+                await interaction.response.send_message("❌ Error: Could not find job information", ephemeral=True)
+                return
+            
+            # Try to extract job ID from the embed field that contains the original post URL
+            job_id = None
+            for field in message_embeds[0].fields:
+                if field.name == "Job Details":
+                    # Extract job ID from the message link in the field value
+                    message_link = field.value.split('/')[-1]
+                    # Get the job data using the message ID
+                    async with seek.aiosqlite.connect(seek.DATABASE_PATH) as db:
+                        async with db.execute(
+                            'SELECT job_id FROM saved_jobs WHERE message_id = ?',
+                            (message_link,)
+                        ) as cursor:
+                            result = await cursor.fetchone()
+                            if result:
+                                job_id = result[0]
+                            
+            if not job_id:
+                await interaction.response.send_message("❌ Error: Could not find job information", ephemeral=True)
+                return
+                
+            async with seek.aiosqlite.connect(seek.DATABASE_PATH) as db:
+                await db.execute('''
+                    UPDATE saved_jobs 
+                    SET status = 'applied'
+                    WHERE job_id = ? AND user_id = ?
+                ''', (job_id, str(interaction.user.id)))
+                await db.commit()
+            
+            # Update the message content to show it's been handled
+            embed = interaction.message.embeds[0]
+            embed.description = "✅ Marked as applied!"
+            embed.color = discord.Color.green()
+            
+            await interaction.response.edit_message(embed=embed, view=None)
+            await interaction.message.delete(delay=3)  # Delete after 3 seconds
+        except Exception as e:
+            print(f"Error in applied button: {str(e)}")
+            await interaction.response.send_message("❌ An error occurred", ephemeral=True)
 
-    @discord.ui.button(label="Remind Later", style=discord.ButtonStyle.secondary, emoji="<:alarmclock:1333302675865079891>")
+    @discord.ui.button(
+        label="Remind Later",
+        style=discord.ButtonStyle.secondary,
+        emoji="<:alarmclock:1333302675865079891>",
+        custom_id="remind_later"  # Base custom_id, job_id will be extracted from the message
+    )
     async def remind_later_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Handle the remind later button click"""
-        async with seek.aiosqlite.connect(seek.DATABASE_PATH) as db:
-            current_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
-            await db.execute('''
-                UPDATE saved_jobs 
-                SET last_reminder_date = datetime(?)
-                WHERE job_id = ? AND user_id = ?
-            ''', (current_time, self.job_id, str(interaction.user.id)))
-            await db.commit()
-        
-        # Update the message content to show it's been handled
-        embed = interaction.message.embeds[0]
-        embed.description = "⏰ Reminder snoozed for 24 hours"
-        embed.color = discord.Color.blue()
-        
-        await interaction.response.edit_message(embed=embed, view=None)
-        await interaction.message.delete(delay=3)  # Delete after 3 seconds
+        try:
+            # Extract job ID similar to applied button
+            message_embeds = interaction.message.embeds
+            if not message_embeds:
+                await interaction.response.send_message("❌ Error: Could not find job information", ephemeral=True)
+                return
+            
+            # Try to extract job ID from the embed field that contains the original post URL
+            job_id = None
+            for field in message_embeds[0].fields:
+                if field.name == "Job Details":
+                    # Extract job ID from the message link in the field value
+                    message_link = field.value.split('/')[-1]
+                    # Get the job data using the message ID
+                    async with seek.aiosqlite.connect(seek.DATABASE_PATH) as db:
+                        async with db.execute(
+                            'SELECT job_id FROM saved_jobs WHERE message_id = ?',
+                            (message_link,)
+                        ) as cursor:
+                            result = await cursor.fetchone()
+                            if result:
+                                job_id = result[0]
+            
+            if not job_id:
+                await interaction.response.send_message("❌ Error: Could not find job information", ephemeral=True)
+                return
+                
+            async with seek.aiosqlite.connect(seek.DATABASE_PATH) as db:
+                current_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+                await db.execute('''
+                    UPDATE saved_jobs 
+                    SET last_reminder_date = datetime(?)
+                    WHERE job_id = ? AND user_id = ?
+                ''', (current_time, job_id, str(interaction.user.id)))
+                await db.commit()
+            
+            # Update the message content to show it's been handled
+            embed = interaction.message.embeds[0]
+            embed.description = "⏰ Reminder snoozed for 24 hours"
+            embed.color = discord.Color.blue()
+            
+            await interaction.response.edit_message(embed=embed, view=None)
+            await interaction.message.delete(delay=3)  # Delete after 3 seconds
+        except Exception as e:
+            print(f"Error in remind later button: {str(e)}")
+            await interaction.response.send_message("❌ An error occurred", ephemeral=True)
 
-    @discord.ui.button(label="Not Interested", style=discord.ButtonStyle.secondary, emoji="<:sqaurex:1330298583135817780>")
+    @discord.ui.button(
+        label="Not Interested",
+        style=discord.ButtonStyle.secondary,
+        emoji="<:sqaurex:1330298583135817780>",
+        custom_id="not_interested"  # Base custom_id, job_id will be extracted from the message
+    )
     async def not_interested_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Handle the not interested button click"""
-        async with seek.aiosqlite.connect(seek.DATABASE_PATH) as db:
-            await db.execute('''
-                UPDATE saved_jobs 
-                SET status = 'dismissed'
-                WHERE job_id = ? AND user_id = ?
-            ''', (self.job_id, str(interaction.user.id)))
-            await db.commit()
-        
-        # Update the message content to show it's been handled
-        embed = interaction.message.embeds[0]
-        embed.description = "❌ Job dismissed"
-        embed.color = discord.Color.from_str('#e78284')
-        
-        await interaction.response.edit_message(embed=embed, view=None)
-        await interaction.message.delete(delay=3)  # Delete after 3 seconds
+        try:
+            # Extract job ID similar to applied button
+            message_embeds = interaction.message.embeds
+            if not message_embeds:
+                await interaction.response.send_message("❌ Error: Could not find job information", ephemeral=True)
+                return
+            
+            # Try to extract job ID from the embed field that contains the original post URL
+            job_id = None
+            for field in message_embeds[0].fields:
+                if field.name == "Job Details":
+                    # Extract job ID from the message link in the field value
+                    message_link = field.value.split('/')[-1]
+                    # Get the job data using the message ID
+                    async with seek.aiosqlite.connect(seek.DATABASE_PATH) as db:
+                        async with db.execute(
+                            'SELECT job_id FROM saved_jobs WHERE message_id = ?',
+                            (message_link,)
+                        ) as cursor:
+                            result = await cursor.fetchone()
+                            if result:
+                                job_id = result[0]
+            
+            if not job_id:
+                await interaction.response.send_message("❌ Error: Could not find job information", ephemeral=True)
+                return
+                
+            async with seek.aiosqlite.connect(seek.DATABASE_PATH) as db:
+                await db.execute('''
+                    UPDATE saved_jobs 
+                    SET status = 'dismissed'
+                    WHERE job_id = ? AND user_id = ?
+                ''', (job_id, str(interaction.user.id)))
+                await db.commit()
+            
+            # Update the message content to show it's been handled
+            embed = interaction.message.embeds[0]
+            embed.description = "❌ Job dismissed"
+            embed.color = discord.Color.from_str('#e78284')
+            
+            await interaction.response.edit_message(embed=embed, view=None)
+            await interaction.message.delete(delay=3)  # Delete after 3 seconds
+        except Exception as e:
+            print(f"Error in not interested button: {str(e)}")
+            await interaction.response.send_message("❌ An error occurred", ephemeral=True)
 
 class JobBot(commands.Bot):
     def __init__(self, shutdown_event):
@@ -276,6 +439,7 @@ class JobBot(commands.Bot):
         # Close the database connections
         try:
             await seek.cleanup()
+            await db_pool.cleanup()  # Clean up the database pool
         except Exception as e:
             print(f"Error during cleanup: {e}")
         
@@ -284,7 +448,14 @@ class JobBot(commands.Bot):
     
     async def setup_hook(self):
         """Setup hook that runs when the bot is first starting"""
+        print("🔄 Setting up persistent views...")
+        # Register persistent views with wildcard job IDs
+        self.add_view(JobActionsView("*"))
+        self.add_view(ReminderActionsView("*"))
+        print("✓ Persistent views registered")
+        
         await self.tree.sync()  # Sync slash commands
+        print("✓ Commands synced")
         
     async def on_ready(self):
         """Called when the bot is ready"""
@@ -386,7 +557,7 @@ class JobBot(commands.Bot):
 
 class JobActionsView(discord.ui.View):
     def __init__(self, job_id: str):
-        super().__init__(timeout=None)  # Buttons don't timeout
+        super().__init__(timeout=None)
         self.job_id = job_id
         
         # Add the Apply button with URL
@@ -394,26 +565,58 @@ class JobActionsView(discord.ui.View):
             label="Apply",
             style=discord.ButtonStyle.link,
             emoji="<:blog:1330298579377590376>",
-            url=f"https://www.seek.com.au/job/{job_id}"
+            url=f"https://www.seek.com.au/job/{job_id}" if job_id != "*" else "https://www.seek.com.au"
         ))
 
-    @discord.ui.button(label="Not Interested", style=discord.ButtonStyle.secondary, emoji="<:sqaurex:1330298583135817780>")
+    @discord.ui.button(
+        label="Not Interested",
+        style=discord.ButtonStyle.secondary,
+        emoji="<:sqaurex:1330298583135817780>",
+        custom_id="dismiss"  # Base custom_id, job_id will be extracted from the message
+    )
     async def dismiss_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Handle the dismiss button click"""
-        # Update the message content to show it's been dismissed
-        embed = interaction.message.embeds[0]
-        embed.description = "❌ Job dismissed"
-        embed.color = discord.Color.from_str('#e78284')
-        
-        await interaction.response.edit_message(embed=embed, view=None)
-        await interaction.message.delete(delay=3)  # Delete after 3 seconds
+        try:
+            # Extract job ID from the message URL
+            message_embeds = interaction.message.embeds
+            if not message_embeds:
+                await interaction.response.send_message("❌ Error: Could not find job information", ephemeral=True)
+                return
+                
+            job_url = message_embeds[0].url
+            job_id = job_url.split('/')[-1]
+            
+            # Update the message content to show it's been dismissed
+            embed = interaction.message.embeds[0]
+            embed.description = "❌ Job dismissed"
+            embed.color = discord.Color.from_str('#e78284')
+            
+            await interaction.response.edit_message(embed=embed, view=None)
+            await interaction.message.delete(delay=3)  # Delete after 3 seconds
+        except Exception as e:
+            print(f"Error in dismiss button: {str(e)}")
+            await interaction.response.send_message("❌ An error occurred", ephemeral=True)
 
-    @discord.ui.button(label="Save", style=discord.ButtonStyle.secondary, emoji="<:bookmark2:1330298581319417947>")
+    @discord.ui.button(
+        label="Save",
+        style=discord.ButtonStyle.secondary,
+        emoji="<:bookmark2:1330298581319417947>",
+        custom_id="save"  # Base custom_id, job_id will be extracted from the message
+    )
     async def save_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Handle the save button click"""
         try:
+            # Extract job ID from the message URL
+            message_embeds = interaction.message.embeds
+            if not message_embeds:
+                await interaction.response.send_message("❌ Error: Could not find job information", ephemeral=True)
+                return
+                
+            job_url = message_embeds[0].url
+            job_id = job_url.split('/')[-1]
+            
             # Save the job for the user
-            await save_job_for_user(self.job_id, interaction.user.id, str(interaction.message.id))
+            await save_job_for_user(job_id, interaction.user.id, str(interaction.message.id))
             
             # Update the message content to show it's been saved
             embed = interaction.message.embeds[0]
@@ -425,11 +628,7 @@ class JobActionsView(discord.ui.View):
             
         except Exception as e:
             print(f"Error saving job: {str(e)}")
-            # Show error in the message instead of ephemeral
-            embed = interaction.message.embeds[0]
-            embed.description = "❌ Error saving job. Please try again."
-            embed.color = discord.Color.red()
-            await interaction.response.edit_message(embed=embed)
+            await interaction.response.send_message("❌ An error occurred while saving the job", ephemeral=True)
 
 class OutputCapture:
     def __init__(self, bot, channel_id):
