@@ -148,7 +148,7 @@ async def check_saved_jobs_reminders():
                     
                     # Send reminder
                     await channel.send(
-                        content=f"<@{job['user_id']}>",
+                        # content=f"<@{job['user_id']}>",  # Temporarily removed user mention
                         embed=embed,
                         view=view
                     )
@@ -195,8 +195,13 @@ class ReminderActionsView(discord.ui.View):
             ''', (self.job_id, str(interaction.user.id)))
             await db.commit()
         
-        await interaction.response.send_message("Congratulations on applying! 🎉", ephemeral=True)
-        await interaction.message.delete()
+        # Update the message content to show it's been handled
+        embed = interaction.message.embeds[0]
+        embed.description = "✅ Marked as applied!"
+        embed.color = discord.Color.green()
+        
+        await interaction.response.edit_message(embed=embed, view=None)
+        await interaction.message.delete(delay=3)  # Delete after 3 seconds
 
     @discord.ui.button(label="Remind Later", style=discord.ButtonStyle.secondary, emoji="<:alarmclock:1333302675865079891>")
     async def remind_later_button(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -210,8 +215,13 @@ class ReminderActionsView(discord.ui.View):
             ''', (current_time, self.job_id, str(interaction.user.id)))
             await db.commit()
         
-        await interaction.response.send_message("I'll remind you again tomorrow!", ephemeral=True)
-        await interaction.message.delete()
+        # Update the message content to show it's been handled
+        embed = interaction.message.embeds[0]
+        embed.description = "⏰ Reminder snoozed for 24 hours"
+        embed.color = discord.Color.blue()
+        
+        await interaction.response.edit_message(embed=embed, view=None)
+        await interaction.message.delete(delay=3)  # Delete after 3 seconds
 
     @discord.ui.button(label="Not Interested", style=discord.ButtonStyle.secondary, emoji="<:sqaurex:1330298583135817780>")
     async def not_interested_button(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -224,8 +234,13 @@ class ReminderActionsView(discord.ui.View):
             ''', (self.job_id, str(interaction.user.id)))
             await db.commit()
         
-        await interaction.response.send_message("Job removed from saved list.", ephemeral=True)
-        await interaction.message.delete()
+        # Update the message content to show it's been handled
+        embed = interaction.message.embeds[0]
+        embed.description = "❌ Job dismissed"
+        embed.color = discord.Color.from_str('#e78284')
+        
+        await interaction.response.edit_message(embed=embed, view=None)
+        await interaction.message.delete(delay=3)  # Delete after 3 seconds
 
 class JobBot(commands.Bot):
     def __init__(self, shutdown_event):
@@ -385,9 +400,13 @@ class JobActionsView(discord.ui.View):
     @discord.ui.button(label="Not Interested", style=discord.ButtonStyle.secondary, emoji="<:sqaurex:1330298583135817780>")
     async def dismiss_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Handle the dismiss button click"""
-        # Delete the message with the job listing
-        await interaction.message.delete()
-        await interaction.response.send_message("Job dismissed!", ephemeral=True)
+        # Update the message content to show it's been dismissed
+        embed = interaction.message.embeds[0]
+        embed.description = "❌ Job dismissed"
+        embed.color = discord.Color.from_str('#e78284')
+        
+        await interaction.response.edit_message(embed=embed, view=None)
+        await interaction.message.delete(delay=3)  # Delete after 3 seconds
 
     @discord.ui.button(label="Save", style=discord.ButtonStyle.secondary, emoji="<:bookmark2:1330298581319417947>")
     async def save_button(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -396,23 +415,21 @@ class JobActionsView(discord.ui.View):
             # Save the job for the user
             await save_job_for_user(self.job_id, interaction.user.id, str(interaction.message.id))
             
-            # Send confirmation
-            embed = discord.Embed(
-                title="Job Saved! 📌",
-                description="I'll send you gentle reminders to apply in the saved jobs channel.",
-                color=discord.Color.green()
-            )
-            embed.add_field(
-                name="What's Next?",
-                value="• Review the job details\n• Prepare your resume\n• Apply when you're ready\n\nI'll check in tomorrow if you haven't applied yet!",
-                inline=False
-            )
+            # Update the message content to show it's been saved
+            embed = interaction.message.embeds[0]
+            embed.description = "📌 Job saved! I'll send you reminders in the saved jobs channel."
+            embed.color = discord.Color.green()
             
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+            await interaction.response.edit_message(embed=embed, view=None)
+            await interaction.message.delete(delay=3)  # Delete after 3 seconds
             
         except Exception as e:
             print(f"Error saving job: {str(e)}")
-            await interaction.response.send_message("Sorry, there was an error saving the job. Please try again.", ephemeral=True)
+            # Show error in the message instead of ephemeral
+            embed = interaction.message.embeds[0]
+            embed.description = "❌ Error saving job. Please try again."
+            embed.color = discord.Color.red()
+            await interaction.response.edit_message(embed=embed)
 
 class OutputCapture:
     def __init__(self, bot, channel_id):
