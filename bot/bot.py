@@ -454,6 +454,84 @@ class JobBot(commands.Bot):
         self.add_view(ReminderActionsView("*"))
         print("✓ Persistent views registered")
         
+        # Add the purge command
+        @self.tree.command(
+            name="purge",
+            description="Delete job listings containing the specified search term"
+        )
+        @app_commands.describe(
+            search_term="The term to search for in job listings (e.g. 'dental')"
+        )
+        async def purge(interaction: discord.Interaction, search_term: str):
+            """Purge job listings containing the specified search term"""
+            await interaction.response.defer(ephemeral=True)
+            
+            try:
+                # Get message history from the channel
+                deleted_count = 0
+                messages_to_delete = []
+                
+                async for message in interaction.channel.history(limit=None):
+                    # Check if message is from the bot and has embeds
+                    if message.author.id == self.user.id and message.embeds:
+                        for embed in message.embeds:
+                            # Search in title, description, and fields
+                            searchable_content = [
+                                embed.title or '',
+                                embed.description or ''
+                            ]
+                            searchable_content.extend(
+                                field.value for field in embed.fields
+                            )
+                            
+                            # Join all content and search case-insensitively
+                            content = ' '.join(searchable_content).lower()
+                            if search_term.lower() in content:
+                                messages_to_delete.append(message)
+                                deleted_count += 1
+                                break  # Break after finding a match in any embed
+                
+                # Delete the messages
+                if messages_to_delete:
+                    await interaction.channel.delete_messages(messages_to_delete)
+                    embed = discord.Embed(
+                        description=f"<:checkboxchecked4x:1333305636993241161> Deleted {deleted_count} job listing{'s' if deleted_count != 1 else ''} containing '{search_term}'",
+                        color=discord.Color.from_str('#fd0585')
+                    )
+                else:
+                    embed = discord.Embed(
+                        description=f"<:squarexmark4x:1341573622484963450> No job listings found containing '{search_term}'",
+                        color=discord.Color.from_str('#fd0585')
+                    )
+                
+                # Send response and delete it after 5 seconds
+                response_message = await interaction.followup.send(embed=embed, ephemeral=True)
+                await asyncio.sleep(5)
+                try:
+                    await response_message.delete()
+                except:
+                    pass  # Ignore any errors during deletion
+                
+            except discord.errors.Forbidden:
+                embed = discord.Embed(
+                    description="<:squarexmark4x:1341573622484963450> I don't have permission to delete messages",
+                    color=discord.Color.from_str('#fd0585')
+                )
+                await interaction.followup.send(embed=embed, ephemeral=True)
+            except discord.errors.HTTPException as e:
+                embed = discord.Embed(
+                    description=f"<:squarexmark4x:1341573622484963450> Error: {str(e)}",
+                    color=discord.Color.from_str('#fd0585')
+                )
+                await interaction.followup.send(embed=embed, ephemeral=True)
+            except Exception as e:
+                print(f"Error in purge command: {str(e)}")
+                embed = discord.Embed(
+                    description="<:squarexmark4x:1341573622484963450> An error occurred while purging messages",
+                    color=discord.Color.from_str('#fd0585')
+                )
+                await interaction.followup.send(embed=embed, ephemeral=True)
+        
         await self.tree.sync()  # Sync slash commands
         print("✓ Commands synced")
         
