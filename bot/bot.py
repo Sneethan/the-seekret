@@ -12,6 +12,10 @@ import random
 import aiosqlite
 import signal
 from functools import lru_cache
+import openai
+import json
+import time
+import re
 
 # Load environment variables
 load_dotenv()
@@ -21,6 +25,18 @@ DISCORD_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
 JOBS_CHANNEL_ID = int(os.getenv('DISCORD_JOBS_CHANNEL_ID', '0'))
 LOGS_CHANNEL_ID = int(os.getenv('DISCORD_LOGS_CHANNEL_ID', '0'))
 SAVED_JOBS_CHANNEL_ID = int(os.getenv('DISCORD_SAVED_JOBS_CHANNEL_ID', '0'))
+
+# OpenAI API Configuration
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+OPENAI_MODEL = os.getenv('OPENAI_MODEL', 'gpt-4o')
+
+# Initialize OpenAI client if key exists
+if OPENAI_API_KEY:
+    openai_client = openai.OpenAI(api_key=OPENAI_API_KEY)
+    print("✓ OpenAI client initialized")
+else:
+    openai_client = None
+    print("⚠ OpenAI API key not found, AI features will not be available")
 
 # Global flag for shutdown
 shutdown_flag = False
@@ -82,7 +98,31 @@ async def get_cached_job_data(job_id: str, user_id: str = None):
             (user_id, job_id) if user_id else (None, job_id)
         ) as cursor:
             job_data = await cursor.fetchone()
-            return dict(job_data) if job_data else None
+            
+            # Check if job data is valid
+            if not job_data:
+                print(f"⚠ Warning: No job data found for job_id: {job_id}")
+                return None
+                
+            # Convert to dict and check all required fields are present
+            job_dict = dict(job_data)
+            
+            # Ensure critical fields are not None
+            required_fields = ['title', 'company', 'description']
+            for field in required_fields:
+                if field not in job_dict or job_dict[field] is None:
+                    job_dict[field] = f"Unknown {field}"
+                    
+            # Ensure bullet_points is valid JSON or empty list
+            if 'bullet_points' not in job_dict or not job_dict['bullet_points']:
+                job_dict['bullet_points'] = '[]'
+                
+            return job_dict
+    except Exception as e:
+        print(f"Error retrieving job data: {str(e)}")
+        import traceback
+        print(traceback.format_exc())
+        return None
     finally:
         await db_pool.release_connection(conn)
 
@@ -98,6 +138,7 @@ REMINDER_MESSAGES = [
 async def setup_saved_jobs_table():
     """Initialize the saved jobs table in the database."""
     async with seek.aiosqlite.connect(seek.DATABASE_PATH) as db:
+        # Create saved jobs table with additional fields for compatibility
         await db.execute('''
             CREATE TABLE IF NOT EXISTS saved_jobs (
                 job_id TEXT PRIMARY KEY,
@@ -107,11 +148,67 @@ async def setup_saved_jobs_table():
                 reminder_count INTEGER DEFAULT 0,
                 status TEXT DEFAULT 'saved',
                 message_id TEXT,
+                ai_compatibility_score REAL,
+                ai_compatibility_details TEXT,
+                last_analyzed_date TEXT,
                 FOREIGN KEY (job_id) REFERENCES jobs (id)
             )
         ''')
+        
+        # Create user resumes table
+        await db.execute('''
+            CREATE TABLE IF NOT EXISTS user_resumes (
+                user_id TEXT PRIMARY KEY,
+                resume_text TEXT,
+                upload_date TEXT,
+                resume_name TEXT,
+                last_updated TEXT
+            )
+        ''')
+        
         await db.commit()
-    print("✓ Saved jobs table initialized")
+        
+        # Run migrations for saved_jobs table
+        await migrate_saved_jobs_table(db)
+        
+    print("✓ Saved jobs and resumes tables initialized")
+
+async def migrate_saved_jobs_table(db):
+    """Check for and apply migrations to the saved_jobs table."""
+    try:
+        print("🔄 Checking for saved_jobs table migrations...")
+        
+        # Get current table schema
+        async with db.execute("PRAGMA table_info(saved_jobs)") as cursor:
+            columns = await cursor.fetchall()
+            column_names = [column[1] for column in columns]
+            
+        # Check for missing columns and add them
+        missing_columns = []
+        expected_columns = {
+            "ai_compatibility_score": "REAL",
+            "ai_compatibility_details": "TEXT",
+            "last_analyzed_date": "TEXT"
+        }
+        
+        for col_name, col_type in expected_columns.items():
+            if col_name not in column_names:
+                missing_columns.append((col_name, col_type))
+        
+        # Add any missing columns
+        for col_name, col_type in missing_columns:
+            print(f"➕ Adding missing column to saved_jobs: {col_name}")
+            await db.execute(f"ALTER TABLE saved_jobs ADD COLUMN {col_name} {col_type}")
+        
+        if missing_columns:
+            await db.commit()
+            print(f"✅ Added {len(missing_columns)} missing columns to saved_jobs table")
+        else:
+            print("✓ No saved_jobs table migrations needed")
+            
+    except Exception as e:
+        print(f"⚠️ Error during saved_jobs table migration: {str(e)}")
+        # Don't raise exception to allow app to continue with partial functionality
 
 async def save_job_for_user(job_id: str, user_id: str, message_id: str):
     """Save a job for a user and set up initial reminder."""
@@ -531,6 +628,218 @@ class JobBot(commands.Bot):
                     color=discord.Color.from_str('#fd0585')
                 )
                 await interaction.followup.send(embed=embed, ephemeral=True)
+                
+        # Add resume upload command
+        @self.tree.command(
+            name="upload_resume",
+            description="Upload your resume file or paste resume text for AI job compatibility matching"
+        )
+        @app_commands.describe(
+            resume_name="Optional name for your resume (e.g. 'My Technical Resume')",
+            resume_file="Upload your resume file (PDF, DOCX, TXT, etc.)"
+        )
+        async def upload_resume(
+            interaction: discord.Interaction, 
+            resume_name: str = None,
+            resume_file: discord.Attachment = None
+        ):
+            """Upload a resume to be used for job compatibility matching"""
+            try:
+                # If no file is provided, show the text input modal
+                if not resume_file:
+                    await interaction.response.send_modal(ResumeModal(resume_name=resume_name))
+                    return
+                
+                # Check file size (8MB limit for safety)
+                if resume_file.size > 8 * 1024 * 1024:
+                    await interaction.response.send_message(
+                        "❌ File too large. Please upload a file smaller than 8MB.",
+                        ephemeral=True
+                    )
+                    return
+                
+                # Check file extension
+                allowed_extensions = ['.pdf', '.docx', '.doc', '.txt', '.rtf']
+                file_ext = os.path.splitext(resume_file.filename.lower())[1]
+                
+                if file_ext not in allowed_extensions:
+                    await interaction.response.send_message(
+                        f"❌ Unsupported file format. Please upload one of: {', '.join(allowed_extensions)}",
+                        ephemeral=True
+                    )
+                    return
+                
+                # Defer the response since processing might take time
+                await interaction.response.defer(ephemeral=True)
+                
+                # Create a temporary file to download the attachment
+                temp_file_path = f"temp_{interaction.user.id}{file_ext}"
+                await resume_file.save(temp_file_path)
+                
+                try:
+                    # Process the file using OpenAI
+                    resume_text = await process_resume_file(temp_file_path, file_ext)
+                    
+                    if not resume_text:
+                        await interaction.followup.send(
+                            "❌ Failed to extract text from your resume. Please try uploading a different file or use the text input method.",
+                            ephemeral=True
+                        )
+                        return
+                    
+                    # Use the uploaded filename as resume name if not provided
+                    if not resume_name:
+                        resume_name = os.path.splitext(resume_file.filename)[0]
+                    
+                    # Save the processed resume
+                    success = await save_resume(
+                        interaction.user.id,
+                        resume_text,
+                        resume_name
+                    )
+                    
+                    if success:
+                        # Send confirmation with preview
+                        preview = resume_text[:500] + ("..." if len(resume_text) > 500 else "")
+                        
+                        embed = discord.Embed(
+                            title="✅ Resume Uploaded Successfully",
+                            description=f"Your resume '{resume_name}' has been processed and stored. You can now use the 'Check Compatibility' button on job posts.",
+                            color=discord.Color.green()
+                        )
+                        
+                        embed.add_field(
+                            name="Content Preview",
+                            value=preview,
+                            inline=False
+                        )
+                        
+                        await interaction.followup.send(
+                            embed=embed,
+                            ephemeral=True
+                        )
+                    else:
+                        await interaction.followup.send(
+                            "❌ Error saving your resume to the database. Please try again later.",
+                            ephemeral=True
+                        )
+                finally:
+                    # Clean up the temporary file
+                    try:
+                        os.remove(temp_file_path)
+                    except Exception:
+                        pass
+                    
+            except Exception as e:
+                print(f"Error in resume upload command: {str(e)}")
+                
+                # If response hasn't been sent yet
+                try:
+                    if interaction.response.is_done():
+                        await interaction.followup.send(
+                            f"❌ An error occurred while processing your resume: {str(e)}",
+                            ephemeral=True
+                        )
+                    else:
+                        await interaction.response.send_message(
+                            f"❌ An error occurred while processing your resume: {str(e)}",
+                            ephemeral=True
+                        )
+                except:
+                    pass
+                
+        # Add view resume command
+        @self.tree.command(
+            name="view_resume",
+            description="View your currently stored resume"
+        )
+        async def view_resume(interaction: discord.Interaction):
+            """View your currently stored resume"""
+            try:
+                resume = await get_user_resume(interaction.user.id)
+                
+                if not resume:
+                    await interaction.response.send_message(
+                        "❌ You don't have a resume stored yet. Use `/upload_resume` to upload one.",
+                        ephemeral=True
+                    )
+                    return
+                    
+                # Create embed to show resume info
+                embed = discord.Embed(
+                    title=f"Your Resume: {resume['resume_name']}",
+                    description="Here's a preview of your stored resume:",
+                    color=discord.Color.from_str('#fd0585')
+                )
+                
+                # Add resume text preview (first 500 chars)
+                preview_text = resume['resume_text'][:500] + "..." if len(resume['resume_text']) > 500 else resume['resume_text']
+                embed.add_field(
+                    name="Content Preview",
+                    value=preview_text,
+                    inline=False
+                )
+                
+                # Add last updated date
+                embed.add_field(
+                    name="Last Updated",
+                    value=resume['last_updated'],
+                    inline=False
+                )
+                
+                # Add buttons to delete or reupload
+                view = ResumeActionsView()
+                
+                await interaction.response.send_message(
+                    embed=embed,
+                    view=view,
+                    ephemeral=True
+                )
+                
+            except Exception as e:
+                print(f"Error in view resume command: {str(e)}")
+                await interaction.response.send_message(
+                    "❌ An error occurred while retrieving your resume.",
+                    ephemeral=True
+                )
+        
+        # Add migrate database command for admins
+        @self.tree.command(
+            name="migrate_database",
+            description="Force a database migration to fix schema issues (Admin only)"
+        )
+        async def migrate_database(interaction: discord.Interaction):
+            """Force a database migration to update schema"""
+            try:
+                # Check if user has admin permissions
+                if not interaction.user.guild_permissions.administrator:
+                    await interaction.response.send_message(
+                        "❌ This command requires administrator permissions.",
+                        ephemeral=True
+                    )
+                    return
+                
+                await interaction.response.defer(ephemeral=True)
+                
+                # Connect to database and run migrations
+                async with seek.aiosqlite.connect(seek.DATABASE_PATH) as db:
+                    # First run migration for jobs table
+                    await seek.migrate_database(db)
+                    
+                    # Then run migration for saved_jobs table
+                    await migrate_saved_jobs_table(db)
+                    
+                await interaction.followup.send(
+                    "✅ Database migration completed successfully! Schema should now be up-to-date.",
+                    ephemeral=True
+                )
+                
+            except Exception as e:
+                print(f"Error in migrate_database command: {str(e)}")
+                await interaction.followup.send(
+                    f"❌ Error during database migration: {str(e)}",
+                    ephemeral=True
+                )
         
         await self.tree.sync()  # Sync slash commands
         print("✓ Commands synced")
@@ -574,51 +883,63 @@ class JobBot(commands.Bot):
                 # Process jobs using our own implementation
                 print(f"⚡ Starting job check at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
                 
-                jobs = await seek.fetch_jobs()
-                if not jobs:
-                    print("✗ No jobs fetched or error occurred")
-                    continue
-                
-                print(f"ℹ Found {len(jobs)} jobs")
-                
-                async with seek.aiosqlite.connect(seek.DATABASE_PATH) as db:
-                    new_jobs = 0
-                    filtered_jobs = 0
-                    for job in jobs:
-                        if not await seek.is_job_processed(db, job['id']):
-                            if not seek.should_process_job(job):
-                                filtered_jobs += 1
-                                continue
-                                
-                            if await post_job(job):
-                                await seek.save_job(db, job)
-                                new_jobs += 1
-                                print(f"✓ Posted new job: {job['title']} ({job['id']})")
-                            else:
-                                print(f"✗ Failed to post job: {job['title']} ({job['id']})")
+                try:
+                    jobs = await seek.fetch_jobs()
+                    if not jobs:
+                        print("✗ No jobs fetched or error occurred")
+                        continue
                     
-                    if new_jobs == 0 and filtered_jobs == 0:
-                        print("ℹ No new jobs found")
-                    else:
-                        print(f"✓ Posted {new_jobs} new jobs ({filtered_jobs} filtered out)")
+                    print(f"ℹ Found {len(jobs)} jobs")
+                    
+                    async with seek.aiosqlite.connect(seek.DATABASE_PATH) as db:
+                        new_jobs = 0
+                        filtered_jobs = 0
+                        for job in jobs:
+                            try:
+                                if not await seek.is_job_processed(db, job['id']):
+                                    if not seek.should_process_job(job):
+                                        filtered_jobs += 1
+                                        continue
+                                        
+                                    if await post_job(job):
+                                        await seek.save_job(db, job)
+                                        new_jobs += 1
+                                        print(f"✓ Posted new job: {job['title']} ({job['id']})")
+                                    else:
+                                        print(f"✗ Failed to post job: {job['title']} ({job['id']})")
+                            except Exception as job_error:
+                                print(f"❌ Error processing job {job.get('id', 'unknown')}: {str(job_error)}")
+                                # Continue with next job
                         
-                    # Print job statistics
-                    try:
-                        stats = await seek.get_job_stats()
-                        print("\n📊 Job Statistics:")
-                        print(f"Total jobs tracked: {stats['total_jobs']}")
-                        print(f"Jobs in last 24h: {stats['jobs_last_24h']}")
-                        print("\nTop Classifications:")
-                        for row in stats['top_classifications']:
-                            print(f"• {row['classification']}: {row['count']}")
-                        print("\nMost Active Companies:")
-                        for row in stats['top_companies']:
-                            print(f"• {row['company']}: {row['count']}")
-                        print("\nWork Type Distribution:")
-                        for row in stats['work_types']:
-                            print(f"• {row['work_type']}: {row['count']}")
-                    except Exception as e:
-                        print(f"⚠ Error getting statistics: {str(e)}")
+                        if new_jobs == 0 and filtered_jobs == 0:
+                            print("ℹ No new jobs found")
+                        else:
+                            print(f"✓ Posted {new_jobs} new jobs ({filtered_jobs} filtered out)")
+                            
+                        # Print job statistics
+                        try:
+                            stats = await seek.get_job_stats()
+                            print("\n📊 Job Statistics:")
+                            print(f"Total jobs tracked: {stats['total_jobs']}")
+                            print(f"Jobs in last 24h: {stats['jobs_last_24h']}")
+                            print("\nTop Classifications:")
+                            for row in stats['top_classifications']:
+                                print(f"• {row['classification']}: {row['count']}")
+                            print("\nMost Active Companies:")
+                            for row in stats['top_companies']:
+                                print(f"• {row['company']}: {row['count']}")
+                            print("\nWork Type Distribution:")
+                            for row in stats['work_types']:
+                                print(f"• {row['work_type']}: {row['count']}")
+                        except Exception as e:
+                            print(f"⚠ Error getting statistics: {str(e)}")
+                except aiosqlite.OperationalError as db_error:
+                    print(f"\n❌ Database schema error: {str(db_error)}")
+                    print("🔄 This may be due to a schema change. Please restart the bot to apply migrations.")
+                except Exception as e:
+                    print(f"\n❌ Error during job processing: {str(e)}")
+                    import traceback
+                    print(traceback.format_exc())
                 
                 # Break into smaller sleep intervals to check shutdown_event
                 for _ in range(seek.CHECK_INTERVAL):
@@ -630,6 +951,8 @@ class JobBot(commands.Bot):
             print("Job check loop cancelled")
         except Exception as e:
             print(f"\n❌ Error in main loop: {str(e)}")
+            import traceback
+            print(traceback.format_exc())  # Print full traceback for easier debugging
         finally:
             print("Job check loop ended")
 
@@ -707,6 +1030,101 @@ class JobActionsView(discord.ui.View):
         except Exception as e:
             print(f"Error saving job: {str(e)}")
             await interaction.response.send_message("❌ An error occurred while saving the job", ephemeral=True)
+
+    @discord.ui.button(
+        label="Check Compatibility",
+        style=discord.ButtonStyle.secondary,
+        emoji="<:sparkle220x:1384044645511860294>",
+        custom_id="ai_compatibility"
+    )
+    async def ai_compatibility_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        """Handle AI compatibility check button click"""
+        try:
+            # Extract job ID from the message URL
+            message_embeds = interaction.message.embeds
+            if not message_embeds:
+                await interaction.response.send_message("❌ Error: Could not find job information", ephemeral=True)
+                return
+                
+            job_url = message_embeds[0].url
+            job_id = job_url.split('/')[-1]
+            
+            # Check if user has a resume uploaded
+            resume = await get_user_resume(interaction.user.id)
+            
+            if not resume:
+                # No resume found, prompt to upload one
+                await interaction.response.send_modal(
+                    ResumeModal(job_id=job_id, analyze_immediately=True)
+                )
+                return
+            
+            # User has a resume, start the compatibility analysis
+            await interaction.response.defer(ephemeral=True)
+            
+            # Get job data
+            job_data = await get_cached_job_data(job_id)
+            if not job_data:
+                await interaction.followup.send(
+                    "❌ Could not find job data for compatibility analysis. The job may no longer exist in our database.",
+                    ephemeral=True
+                )
+                return
+                
+            # Validate resume text
+            if not resume['resume_text'] or len(resume['resume_text']) < 50:
+                await interaction.followup.send(
+                    "❌ Your stored resume appears to be empty or too short for analysis. Please upload a complete resume using `/upload_resume`.",
+                    ephemeral=True
+                )
+                return
+            
+            # Send initial status
+            await interaction.followup.send(
+                "🔍 Analyzing your resume against this job posting...\nThis may take up to 30 seconds.",
+                ephemeral=True
+            )
+            
+            try:
+                # Run the analysis
+                score, analysis = await analyze_job_compatibility(resume['resume_text'], job_data)
+                
+                # Create the results embed
+                embed = create_compatibility_embed(job_data, score, analysis)
+                
+                # Send the results to the user
+                await interaction.followup.send(
+                    content=f"Here's your AI job match analysis for: **{job_data.get('title')}**",
+                    embed=embed,
+                    ephemeral=True
+                )
+                
+                # Save the analysis results
+                await save_compatibility_results(job_id, interaction.user.id, score, analysis)
+            except Exception as analysis_error:
+                print(f"Error during compatibility analysis: {str(analysis_error)}")
+                import traceback
+                print(traceback.format_exc())
+                
+                await interaction.followup.send(
+                    f"❌ Error analyzing job compatibility: {str(analysis_error)}\n\n" +
+                    "This could be due to a server issue or a problem with OpenAI's API. Please try again later.",
+                    ephemeral=True
+                )
+            
+        except Exception as e:
+            print(f"Error in AI compatibility check: {str(e)}")
+            import traceback
+            print(traceback.format_exc())
+            
+            # Try to send an error message, but don't error if response is already sent
+            try:
+                if interaction.response.is_done():
+                    await interaction.followup.send("❌ An error occurred during the compatibility check.", ephemeral=True)
+                else:
+                    await interaction.response.send_message("❌ An error occurred during the compatibility check.", ephemeral=True)
+            except:
+                pass
 
 class OutputCapture:
     def __init__(self, bot, channel_id):
@@ -835,6 +1253,494 @@ async def post_job(job):
     except Exception as e:
         print(f"Error posting job: {str(e)}")
         return False
+
+async def save_resume(user_id: str, resume_text: str, resume_name: str = "resume.txt"):
+    """Save a user's resume to the database."""
+    try:
+        current_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+        async with seek.aiosqlite.connect(seek.DATABASE_PATH) as db:
+            await db.execute('''
+                INSERT OR REPLACE INTO user_resumes
+                (user_id, resume_text, upload_date, resume_name, last_updated)
+                VALUES (?, ?, datetime(?), ?, datetime(?))
+            ''', (str(user_id), resume_text, current_time, resume_name, current_time))
+            await db.commit()
+        return True
+    except Exception as e:
+        print(f"Error saving resume: {str(e)}")
+        return False
+
+async def get_user_resume(user_id: str):
+    """Get a user's resume from the database."""
+    try:
+        async with seek.aiosqlite.connect(seek.DATABASE_PATH) as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute(
+                'SELECT resume_text, resume_name, last_updated FROM user_resumes WHERE user_id = ?',
+                (str(user_id),)
+            ) as cursor:
+                resume = await cursor.fetchone()
+                return dict(resume) if resume else None
+    except Exception as e:
+        print(f"Error getting resume: {str(e)}")
+        return None
+
+async def analyze_job_compatibility(resume_text: str, job_data: dict):
+    """Analyze compatibility between resume and job using OpenAI API."""
+    if not openai_client:
+        return None, "OpenAI API key not configured."
+
+    try:
+        # Safely parse JSON fields with proper error handling
+        def safe_parse_json(json_str):
+            if not json_str:
+                return []
+            try:
+                return json.loads(json_str)
+            except (json.JSONDecodeError, TypeError):
+                return []
+        
+        # Format job data for the AI prompt
+        job_description = {
+            "title": job_data.get('title', ''),
+            "company": job_data.get('company', ''),
+            "description": job_data.get('description', ''),
+            "bullet_points": safe_parse_json(job_data.get('bullet_points')),
+            "classification": job_data.get('classification', ''),
+            "subclassification": job_data.get('subclassification', ''),
+            "work_type": job_data.get('work_type', ''),
+            "salary": job_data.get('salary', '')
+        }
+        
+        # Debug info
+        print(f"Processing job compatibility for: {job_description['title']}")
+        
+        # Construct the prompt
+        prompt = f"""
+        Please analyze the compatibility between this resume and job description. Provide:
+        1. A compatibility score from 0-100%
+        2. Key strengths that match the job requirements
+        3. Areas where the resume could be improved for this specific position
+        4. Suggestions for tailoring the resume to better match this job
+        
+        JOB DESCRIPTION:
+        {json.dumps(job_description, indent=2)}
+        
+        RESUME:
+        {resume_text}
+        
+        Format your response as a JSON object with the following keys:
+        - score: A number between 0-100
+        - strengths: An array of strings
+        - improvement_areas: An array of strings
+        - tailoring_suggestions: An array of strings
+        """
+        
+        # Set up API parameters - some models don't support temperature
+        api_params = {
+            "model": OPENAI_MODEL,
+            "messages": [
+                {"role": "system", "content": "You are a professional resume analyzer and job matching expert."},
+                {"role": "user", "content": prompt}
+            ],
+            "response_format": {"type": "json_object"}
+        }
+        
+        # Only add temperature for models known to support it
+        # GPT-4 and GPT-3.5-turbo typically support temperature
+        if "gpt-4" in OPENAI_MODEL or "gpt-3.5-turbo" in OPENAI_MODEL:
+            api_params["temperature"] = 0.3
+        
+        print(f"Calling OpenAI API with model: {OPENAI_MODEL}")
+        
+        # Call OpenAI API
+        try:
+            response = openai_client.chat.completions.create(**api_params)
+        except openai.BadRequestError as e:
+            # If temperature is the issue, retry without it
+            if "temperature" in str(e):
+                print("Temperature not supported by this model, retrying without temperature parameter")
+                if "temperature" in api_params:
+                    del api_params["temperature"]
+                response = openai_client.chat.completions.create(**api_params)
+            else:
+                # Re-raise if it's not a temperature issue
+                raise
+        
+        # Extract and parse the response
+        result_text = response.choices[0].message.content.strip()
+        
+        # Debug response
+        print(f"OpenAI API response received, length: {len(result_text)}")
+        
+        # Parse result with error handling
+        try:
+            result = json.loads(result_text)
+        except json.JSONDecodeError as e:
+            print(f"Error parsing OpenAI response: {str(e)}")
+            print(f"Response was: {result_text[:100]}...")
+            return 50, {
+                "error": "Failed to parse AI response",
+                "strengths": ["Unable to analyze strengths automatically"],
+                "improvement_areas": ["Unable to analyze improvement areas"],
+                "tailoring_suggestions": ["Unable to provide tailoring suggestions"]
+            }
+        
+        # Ensure all expected fields exist
+        result = {
+            "score": result.get("score", 50),
+            "strengths": result.get("strengths", []),
+            "improvement_areas": result.get("improvement_areas", []),
+            "tailoring_suggestions": result.get("tailoring_suggestions", [])
+        }
+        
+        # Return score and details
+        return result.get('score', 0), result
+        
+    except Exception as e:
+        print(f"Error analyzing job compatibility: {str(e)}")
+        import traceback
+        print(traceback.format_exc())
+        return 0, {"error": str(e), "strengths": [], "improvement_areas": [], "tailoring_suggestions": []}
+
+class ResumeModal(discord.ui.Modal):
+    """Modal for submitting a resume."""
+    
+    resume_text = discord.ui.TextInput(
+        label="Paste your resume text here",
+        style=discord.TextStyle.paragraph,
+        placeholder="Paste the contents of your resume/CV here...",
+        required=True,
+        max_length=4000  # Discord limit
+    )
+    
+    def __init__(self, job_id: str = None, analyze_immediately: bool = False, resume_name: str = None):
+        self.job_id = job_id
+        self.analyze_immediately = analyze_immediately
+        super().__init__(title="Upload Your Resume")
+        
+        # Set resume name field with provided value if any
+        self.resume_name = discord.ui.TextInput(
+            label="Resume Name",
+            placeholder="My Professional Resume",
+            required=False,
+            max_length=100,
+            default=resume_name or ""
+        )
+        self.add_item(self.resume_name)
+    
+    async def on_submit(self, interaction: discord.Interaction):
+        """Handle resume submission."""
+        try:
+            # Save the resume
+            resume_name = self.resume_name.value or "Resume"
+            success = await save_resume(
+                interaction.user.id, 
+                self.resume_text.value, 
+                resume_name
+            )
+            
+            if success:
+                if self.analyze_immediately and self.job_id:
+                    # Tell the user we're analyzing
+                    await interaction.response.send_message(
+                        "Resume saved! Analyzing compatibility with this job...",
+                        ephemeral=True
+                    )
+                    
+                    # Start analysis in background
+                    asyncio.create_task(
+                        self.analyze_job_compatibility_now(interaction, self.job_id)
+                    )
+                else:
+                    await interaction.response.send_message(
+                        "✅ Resume saved successfully! You can now use the 'Check Compatibility' button on job posts.",
+                        ephemeral=True
+                    )
+            else:
+                await interaction.response.send_message(
+                    "❌ Error saving your resume. Please try again later.",
+                    ephemeral=True
+                )
+        except Exception as e:
+            print(f"Error in resume submission: {str(e)}")
+            await interaction.response.send_message(
+                "An error occurred while processing your resume.",
+                ephemeral=True
+            )
+    
+    async def analyze_job_compatibility_now(self, interaction, job_id):
+        """Analyze job compatibility immediately after resume submission."""
+        try:
+            # Get job data
+            job_data = await get_cached_job_data(job_id)
+            if not job_data:
+                await interaction.followup.send(
+                    "❌ Could not find job data for compatibility analysis.",
+                    ephemeral=True
+                )
+                return
+            
+            # Get the user's resume that was just saved
+            resume = await get_user_resume(interaction.user.id)
+            if not resume:
+                await interaction.followup.send(
+                    "❌ Could not retrieve your resume for analysis.",
+                    ephemeral=True
+                )
+                return
+            
+            # Analyze compatibility
+            score, analysis = await analyze_job_compatibility(resume['resume_text'], job_data)
+            
+            # Create an embed to display results
+            embed = create_compatibility_embed(job_data, score, analysis)
+            
+            # Send results
+            await interaction.followup.send(
+                embed=embed,
+                ephemeral=True
+            )
+            
+            # Save the analysis results to the database
+            await save_compatibility_results(job_id, interaction.user.id, score, analysis)
+            
+        except Exception as e:
+            print(f"Error in job compatibility analysis: {str(e)}")
+            await interaction.followup.send(
+                "❌ An error occurred during compatibility analysis.",
+                ephemeral=True
+            )
+
+async def save_compatibility_results(job_id, user_id, score, analysis_details):
+    """Save job compatibility analysis results to the database."""
+    try:
+        current_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+        analysis_json = json.dumps(analysis_details) if isinstance(analysis_details, dict) else '{}'
+        
+        async with seek.aiosqlite.connect(seek.DATABASE_PATH) as db:
+            await db.execute('''
+                UPDATE saved_jobs
+                SET ai_compatibility_score = ?, 
+                    ai_compatibility_details = ?,
+                    last_analyzed_date = datetime(?)
+                WHERE job_id = ? AND user_id = ?
+            ''', (score, analysis_json, current_time, job_id, str(user_id)))
+            await db.commit()
+        return True
+    except Exception as e:
+        print(f"Error saving compatibility results: {str(e)}")
+        return False
+
+def create_compatibility_embed(job_data, score, analysis):
+    """Create a Discord embed to display job compatibility results."""
+    # Format the score as a percentage
+    score_display = f"{score:.1f}%" if isinstance(score, (int, float)) else "N/A"
+    
+    # Create the embed
+    embed = discord.Embed(
+        title=f"AI Job Match: {job_data.get('title', 'Job Opening')}",
+        description=f"**Compatibility Score: {score_display}**",
+        color=get_score_color(score)
+    )
+    
+    # Add job details
+    embed.add_field(
+        name=f"{seek.EMOTE_COMPANY} Company",
+        value=job_data.get('company', 'Unknown Company'),
+        inline=True
+    )
+    
+    # Add strengths
+    strengths = analysis.get('strengths', [])
+    if strengths:
+        embed.add_field(
+            name="💪 Key Strengths",
+            value="\n• " + "\n• ".join(strengths[:3]),
+            inline=False
+        )
+    
+    # Add improvement areas
+    improvements = analysis.get('improvement_areas', [])
+    if improvements:
+        embed.add_field(
+            name="🎯 Areas to Improve",
+            value="\n• " + "\n• ".join(improvements[:3]),
+            inline=False
+        )
+    
+    # Add tailoring suggestions
+    suggestions = analysis.get('tailoring_suggestions', [])
+    if suggestions:
+        embed.add_field(
+            name="✏️ Tailoring Suggestions",
+            value="\n• " + "\n• ".join(suggestions[:3]),
+            inline=False
+        )
+    
+    # Add footer with timestamp
+    embed.set_footer(
+        text=f"Analysis generated on {datetime.now().strftime('%Y-%m-%d %H:%M')}",
+        icon_url="https://cdn.getminted.cc/seek.png"
+    )
+    
+    return embed
+
+def get_score_color(score):
+    """Get an appropriate color based on the compatibility score."""
+    if isinstance(score, (int, float)):
+        if score >= 80:
+            return discord.Color.green()
+        elif score >= 60:
+            return discord.Color.gold()
+        elif score >= 40:
+            return discord.Color.orange()
+        else:
+            return discord.Color.red()
+    return discord.Color.from_str('#fd0585')  # Default color
+
+class ResumeActionsView(discord.ui.View):
+    """View with buttons for resume management."""
+    def __init__(self):
+        super().__init__(timeout=300)  # 5 minute timeout
+
+    @discord.ui.button(
+        label="Update Resume",
+        style=discord.ButtonStyle.primary,
+        emoji="📝"
+    )
+    async def update_resume_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        """Open modal to update resume"""
+        try:
+            await interaction.response.send_modal(ResumeModal())
+        except Exception as e:
+            print(f"Error opening resume modal: {str(e)}")
+            await interaction.response.send_message(
+                "❌ An error occurred while opening the resume update form.",
+                ephemeral=True
+            )
+            
+    @discord.ui.button(
+        label="Delete Resume",
+        style=discord.ButtonStyle.danger,
+        emoji="🗑️"
+    )
+    async def delete_resume_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        """Delete the user's resume"""
+        try:
+            async with seek.aiosqlite.connect(seek.DATABASE_PATH) as db:
+                await db.execute(
+                    'DELETE FROM user_resumes WHERE user_id = ?',
+                    (str(interaction.user.id),)
+                )
+                await db.commit()
+                
+            await interaction.response.edit_message(
+                content="✅ Your resume has been successfully deleted.",
+                embed=None,
+                view=None
+            )
+        except Exception as e:
+            print(f"Error deleting resume: {str(e)}")
+            await interaction.response.send_message(
+                "❌ An error occurred while deleting your resume.",
+                ephemeral=True
+            )
+
+async def process_resume_file(file_path, file_ext):
+    """Process resume file and extract text content using OpenAI."""
+    if not openai_client:
+        raise Exception("OpenAI API key not configured. Cannot process resume files.")
+    
+    try:
+        # For simple text files, just read the content directly
+        if file_ext == '.txt':
+            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                return f.read()
+        
+        # For all other file types, we need to extract file contents
+        file_content = None
+        
+        if file_ext == '.pdf':
+            try:
+                # Try to use PyPDF2 if available
+                import PyPDF2
+                with open(file_path, 'rb') as f:
+                    reader = PyPDF2.PdfReader(f)
+                    text = ""
+                    for page_num in range(len(reader.pages)):
+                        text += reader.pages[page_num].extract_text() + "\n\n"
+                    file_content = text
+            except ImportError:
+                # If PyPDF2 is not available, use a simple approach
+                print("PyPDF2 not available, using fallback method for PDF")
+                with open(file_path, 'rb') as f:
+                    # Read binary content for processing with OpenAI
+                    file_content = "PDF binary content extracted"
+        
+        elif file_ext == '.docx':
+            try:
+                # Try to use python-docx if available
+                import docx
+                doc = docx.Document(file_path)
+                text = []
+                for para in doc.paragraphs:
+                    text.append(para.text)
+                file_content = '\n'.join(text)
+            except ImportError:
+                # If python-docx is not available, use a simple approach
+                print("python-docx not available, using fallback method for DOCX")
+                with open(file_path, 'rb') as f:
+                    # Read binary content for processing with OpenAI
+                    file_content = "DOCX binary content extracted"
+        
+        else:
+            # For other file types, just note the format
+            with open(file_path, 'rb') as f:
+                file_content = f"File content in {file_ext} format"
+                
+        # Now use OpenAI to process the extracted content
+        if file_content:
+            # Set up API parameters
+            api_params = {
+                "model": OPENAI_MODEL,
+                "messages": [
+                    {"role": "system", "content": """You are a resume parser. Extract or format the text content from the provided resume.
+                     Format the content in clean Markdown, preserving the structure, sections, bullet points, and important formatting.
+                     Include ALL content from the resume - contact details, education, experience, skills, etc.
+                     Format the output as properly structured Markdown with appropriate headers and bullet points."""},
+                    {"role": "user", "content": f"Here's the content from a resume in {file_ext} format. Please format it as clean markdown:\n\n{file_content}"}
+                ]
+            }
+            
+            # Only add temperature for models known to support it
+            if "gpt-4" in OPENAI_MODEL or "gpt-3.5-turbo" in OPENAI_MODEL:
+                api_params["temperature"] = 0.2
+                
+            print(f"Processing resume file with model: {OPENAI_MODEL}")
+            
+            # Call OpenAI API with error handling
+            try:
+                response = openai_client.chat.completions.create(**api_params)
+            except openai.BadRequestError as e:
+                # If temperature is the issue, retry without it
+                if "temperature" in str(e):
+                    print("Temperature not supported for resume processing, retrying without temperature")
+                    if "temperature" in api_params:
+                        del api_params["temperature"]
+                    response = openai_client.chat.completions.create(**api_params)
+                else:
+                    # Re-raise if it's not a temperature issue
+                    raise
+            
+            return response.choices[0].message.content.strip()
+        
+        return None
+    except Exception as e:
+        print(f"Error processing resume file: {str(e)}")
+        import traceback
+        print(traceback.format_exc())
+        return None
 
 async def main():
     """Main function to run the bot"""

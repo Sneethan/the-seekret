@@ -1,6 +1,6 @@
 # The Seekret - Discord Bot Version
 
-A Discord bot implementation that monitors SEEK job listings and provides interactive job notifications with save and reminder functionality.
+A Discord bot implementation that monitors SEEK job listings and provides interactive job notifications with save and reminder functionality, now with AI-powered job compatibility matching.
 
 ```
                    (                                
@@ -21,6 +21,8 @@ A Discord bot implementation that monitors SEEK job listings and provides intera
 - Job saving functionality with reminders
 - Automatic job filtering based on criteria
 - Console output logging to Discord channel
+- **AI-powered job compatibility analysis** with tailored CV recommendations
+- **Resume storage** for quick job compatibility checks
 
 ## 🔧 Configuration
 
@@ -32,6 +34,10 @@ DISCORD_BOT_TOKEN=your_bot_token_here
 DISCORD_JOBS_CHANNEL_ID=channel_for_job_posts
 DISCORD_LOGS_CHANNEL_ID=channel_for_console_logs
 DISCORD_SAVED_JOBS_CHANNEL_ID=channel_for_saved_jobs
+
+# OpenAI API Settings (for AI job compatibility)
+OPENAI_API_KEY=your_openai_api_key  # Required for AI features
+OPENAI_MODEL=gpt-4o                 # OpenAI model to use (defaults to gpt-4o)
 
 # Database Configuration
 DATABASE_PATH=/path/to/your/production/jobs.db  # Optional: Defaults to local jobs.db in bot directory
@@ -67,6 +73,7 @@ Each job post includes interactive buttons:
 - 📝 **Apply** - Direct link to the SEEK job listing
 - ❌ **Not Interested** - Dismiss the job post
 - 📌 **Save** - Save the job for later with reminders
+- 🤖 **Check Compatibility** - Analyze how well your resume matches the job
 
 ## 📌 Saved Jobs
 
@@ -82,6 +89,20 @@ Reminders are sent:
 - Once per day
 - Up to 3 times total
 - In the designated saved jobs channel
+
+## 🧠 AI Job Matching
+
+The AI job matching feature:
+- Compares your resume against job listings
+- Provides a compatibility score (0-100%)
+- Highlights your key strengths that match the job
+- Identifies areas for improvement
+- Suggests how to tailor your resume for the specific job
+
+To use this feature:
+1. Upload your resume using `/upload_resume` command
+2. Click "Check Compatibility" on any job post
+3. View and manage your stored resume with `/view_resume`
 
 ## 📊 Console Output
 
@@ -100,5 +121,7 @@ All console output is also sent to the designated logs channel.
 The bot uses SQLite (`jobs.db`) to store:
 - Job listings and metadata
 - Saved jobs and their status
+- User resumes and profile information
+- AI compatibility scores and analysis results
 - Reminder tracking
 - Job statistics 

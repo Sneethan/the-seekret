@@ -86,7 +86,7 @@ async def setup_database():
     print(f"🗄️ Setting up database at: {DATABASE_PATH}")
     try:
         async with aiosqlite.connect(DATABASE_PATH) as db:
-            # Create jobs table
+            # Create jobs table with enhanced fields for AI analysis
             await db.execute('''
                 CREATE TABLE IF NOT EXISTS jobs (
                     id TEXT PRIMARY KEY,
@@ -105,14 +105,58 @@ async def setup_database():
                     processed_date TEXT,
                     display_type TEXT,
                     is_featured INTEGER,
-                    tags TEXT
+                    tags TEXT,
+                    role_id TEXT,
+                    location_data TEXT,
+                    branding_data TEXT
                 )
             ''')
             await db.commit()
             print("✓ Jobs table initialized")
+            
+            # After creating tables, check for and apply any needed migrations
+            await migrate_database(db)
+            
     except Exception as e:
         print(f"❌ Error setting up database: {str(e)}")
         raise  # Re-raise to ensure the error is not silently caught
+
+async def migrate_database(db):
+    """Check for and apply database migrations to support schema changes."""
+    try:
+        print("🔄 Checking for database migrations...")
+        
+        # Get current table schema
+        async with db.execute("PRAGMA table_info(jobs)") as cursor:
+            columns = await cursor.fetchall()
+            column_names = [column[1] for column in columns]
+            
+        # Check for missing columns and add them
+        missing_columns = []
+        expected_columns = {
+            "role_id": "TEXT",
+            "location_data": "TEXT",
+            "branding_data": "TEXT"
+        }
+        
+        for col_name, col_type in expected_columns.items():
+            if col_name not in column_names:
+                missing_columns.append((col_name, col_type))
+        
+        # Add any missing columns
+        for col_name, col_type in missing_columns:
+            print(f"➕ Adding missing column: {col_name}")
+            await db.execute(f"ALTER TABLE jobs ADD COLUMN {col_name} {col_type}")
+        
+        if missing_columns:
+            await db.commit()
+            print(f"✅ Added {len(missing_columns)} missing columns to jobs table")
+        else:
+            print("✓ No database migrations needed")
+            
+    except Exception as e:
+        print(f"⚠️ Error during database migration: {str(e)}")
+        # Don't raise exception here to allow the app to continue even if migration has issues
 
 async def is_job_processed(db, job_id):
     """Check if a job has already been processed."""
@@ -143,14 +187,28 @@ async def save_job(db, job):
     bullet_points = json.dumps(job.get('bulletPoints', [])) if job.get('bulletPoints') else None
     tags = json.dumps([tag['label'] for tag in job.get('tags', [])]) if job.get('tags') else None
     
+    # Extract additional fields for AI analysis
+    role_id = job.get('roleId', '')
+    display_type = job.get('displayType', '')
+    is_featured = 1 if job.get('isFeatured', False) else 0
+    
+    # Extract teaser/description for better context
+    description = job.get('teaser', '')
+    
+    # Extract more location data for better geo-matching
+    location_data = json.dumps(job.get('locations', [])) if job.get('locations') else None
+    
+    # Extract branding info for company context
+    branding_data = json.dumps(job.get('branding', {})) if job.get('branding') else None
+    
     await db.execute('''
         INSERT INTO jobs (
             id, title, company, company_id, location, salary, work_type,
             work_arrangement, classification, subclassification, description,
             bullet_points, posted_date, processed_date, display_type,
-            is_featured, tags
+            is_featured, tags, role_id, location_data, branding_data
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ''', (
         job['id'],
         job['title'],
@@ -162,13 +220,16 @@ async def save_job(db, job):
         work_arrangement,
         classification,
         subclassification,
-        job.get('teaser', ''),
+        description,
         bullet_points,
         job['listingDate'],
         datetime.now().isoformat(),
-        job.get('displayType', ''),
-        1 if job.get('isFeatured', False) else 0,
-        tags
+        display_type,
+        is_featured,
+        tags,
+        role_id,
+        location_data,
+        branding_data
     ))
     await db.commit()
 
